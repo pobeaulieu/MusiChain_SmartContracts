@@ -28,8 +28,10 @@ install go: https://go.dev/dl/
 - Unix-> `npm run startu`
 
 # Database
+The database is SQLite and is stored in the file system for ease of use (MusiChain.db). 
 
-brew install postgresql
+# API doc: Postman
+https://app.getpostman.com/join-team?invite_code=1186fe4ad7ca33b012e832e4a67a33ab&target_code=e60fade79b46f3b70ef8c85e7f695a5b 
 
-brew services start postgresql@14
+
 

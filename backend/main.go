@@ -1,15 +1,14 @@
 package main
 
 import (
-	"backend/database"
+	"backend/domain"
 	"backend/routes"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func main() {
-	database.Connect()
+	domain.Connect()
 
 	app := fiber.New()
 
