@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/database"
 	"backend/domain"
 	"backend/routes"
 	"github.com/gofiber/fiber/v2"
@@ -8,7 +9,11 @@ import (
 )
 
 func main() {
-	domain.Connect()
+	database.Connect()
+
+	if err := domain.AutoMigrate(); err != nil {
+		panic("could not migrate the database")
+	}
 
 	app := fiber.New()
 

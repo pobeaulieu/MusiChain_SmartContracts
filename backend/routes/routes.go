@@ -1,13 +1,13 @@
 package routes
 
 import (
-	"backend/controllers"
+	"backend/http/handlers"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func Setup(app *fiber.App) {
-	app.Post("/api/register", controllers.Register)
-	app.Post("/api/login", controllers.Login)
-	app.Post("/api/logout", controllers.Logout)
+	app.Post("/api/register", handlers.Register)
+	app.Post("/api/login", handlers.Login)
+	app.Post("/api/logout", handlers.Logout)
 }

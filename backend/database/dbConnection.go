@@ -1,4 +1,4 @@
-package domain
+package database
 
 import (
 	"os"
@@ -23,9 +23,4 @@ func Connect() {
 	}
 
 	DB = connection
-
-	err = connection.AutoMigrate(&User{})
-	if err != nil {
-		panic("could not migrate the database")
-	}
 }
