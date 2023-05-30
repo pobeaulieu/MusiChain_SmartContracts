@@ -6,4 +6,5 @@ import (
 
 func TestWeb3(t *testing.T) {
 	PrintTest()
+	deployNewContract()
 }
