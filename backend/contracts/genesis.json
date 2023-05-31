@@ -1,0 +1,22 @@
+{
+  "config": {
+    "chainId": 1234,
+    "homesteadBlock": 0,
+    "eip150Block": 0,
+    "eip155Block": 0,
+    "eip158Block": 0
+  },
+  "alloc": {
+    "YOUR_ADDRESS": {
+      "balance": "1000000000000000000000000"
+    } 
+  },
+  "coinbase": "0x24a214Be4e5c961d548443bb5c0a13bbc0dEEDF3", 
+  "difficulty": "2000000",
+  "extraData": "",
+  "gasLimit": "8000000",
+  "nonce": "0xdeadbeefdeadbeef",
+  "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "timestamp": "0x00"
+}
