@@ -1,10 +1,10 @@
 package web3
 
 import (
+	"backend/services/api"
 	"context"
 	"crypto/ecdsa"
 	"fmt"
-	"github.com/chenzhijie/go-web3"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -18,122 +18,185 @@ func PrintTest() {
 
 // Prochaine tentative :https://medium.com/nerd-for-tech/smart-contract-with-golang-d208c92848a9
 // Exemple adapté de : https://github.com/chenzhijie/go-web3/blob/master/examples/contract/erc20.go et de https://geth.ethereum.org/docs/developers/dapp-developer/native-bindings
-func deployNewContract() {
+//func deployNewContract() {
+//
+//	abiStr := `[{"inputs": [{"internalType": "uint256","name": "num","type": "uint256"},{"internalType": "uint256","name": "price","type": "uint256"},{"internalType": "uint256","name": "divi","type": "uint256"},{"internalType": "uint256","name": "initial","type": "uint256"}],"name": "store","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [],"name": "retrieve","outputs": [{"internalType": "uint256","name": "","type": "uint256"},{"internalType": "uint256","name": "","type": "uint256"},{"internalType": "uint256","name": "","type": "uint256"},{"internalType": "uint256","name": "","type": "uint256"}],"stateMutability": "view","type": "function"}]`
+//	// change to your rpc provider (this one is for Ganache)
+//	rpcProvider := "HTTP://127.0.0.1:7545"
+//	// set default account by private key
+//	privateKey1 := "b4e49fdbfd4bf7989d121b9423cf371dfdc7d383b5cfdae98b27f9153de75f63"
+//	bytecode := "0x" + "608060405234801561001057600080fd5b506101e6806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80632e64cec11461003b578063f58a28451461005c575b600080fd5b610043610078565b60405161005394939291906100d3565b60405180910390f35b61007660048036038101906100719190610149565b610098565b005b600080600080600054600154600254600354935093509350935090919293565b8360008190555082600181905550816002819055508060038190555050505050565b6000819050919050565b6100cd816100ba565b82525050565b60006080820190506100e860008301876100c4565b6100f560208301866100c4565b61010260408301856100c4565b61010f60608301846100c4565b95945050505050565b600080fd5b610126816100ba565b811461013157600080fd5b50565b6000813590506101438161011d565b92915050565b6000806000806080858703121561016357610162610118565b5b600061017187828801610134565b945050602061018287828801610134565b935050604061019387828801610134565b92505060606101a487828801610134565b9150509295919450925056fea26469706673582212207fa7ea02e09f6434989a440d717016a1778a5128a9adacd0b5df40e5890bd78a64736f6c63430008120033"
+//
+//	client, err := ethclient.Dial(rpcProvider)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	privateKey, err := crypto.HexToECDSA(privateKey1)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	publicKey := privateKey.Public()
+//	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+//	if !ok {
+//		log.Fatal("error casting public key to ECDSA")
+//	}
+//
+//	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+//	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	gasPrice, err := client.SuggestGasPrice(context.Background())
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	auth := bind.NewKeyedTransactor(privateKey)
+//	auth.Nonce = big.NewInt(int64(nonce))
+//	auth.Value = big.NewInt(0)     // in wei
+//	auth.GasLimit = uint64(300000) // in units
+//	auth.GasPrice = gasPrice
+//
+//	input := "1.0"
+//	address, tx, instance, err := store.DeployStore(auth, client, input)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	chainId := int64(1337)
+//	if err := web3.Eth.SetAccount(privateKey); err != nil {
+//		panic(err)
+//	}
+//	web3.Eth.SetChainId(chainId)
+//	tokenAddr := "0x623639bA2c3ffc7b7d8879e8F3e4CFC905f7A3C7"
+//	contract, err := web3.Eth.NewContract(abiStr, tokenAddr)
+//	if err != nil {
+//		panic(err)
+//	}
+//	fmt.Println("Contract address: ", contract.Address())
+//
+//	// We need to change that to get the 1st element of retrieve
+//	totalSupply, err := contract.Call("retrieve")
+//	if err != nil {
+//		panic(err)
+//	}
+//	fmt.Printf("Total supply %v\n", totalSupply)
 
-	abiStr := `[{"inputs": [{"internalType": "uint256","name": "num","type": "uint256"},{"internalType": "uint256","name": "price","type": "uint256"},{"internalType": "uint256","name": "divi","type": "uint256"},{"internalType": "uint256","name": "initial","type": "uint256"}],"name": "store","outputs": [],"stateMutability": "nonpayable","type": "function"},{"inputs": [],"name": "retrieve","outputs": [{"internalType": "uint256","name": "","type": "uint256"},{"internalType": "uint256","name": "","type": "uint256"},{"internalType": "uint256","name": "","type": "uint256"},{"internalType": "uint256","name": "","type": "uint256"}],"stateMutability": "view","type": "function"}]`
-	// change to your rpc provider (this one is for Ganache)
-	rpcProvider := "HTTP://127.0.0.1:7545"
-	// set default account by private key
-	privateKey1 := "b4e49fdbfd4bf7989d121b9423cf371dfdc7d383b5cfdae98b27f9153de75f63"
-	bytecode := "0x" + "608060405234801561001057600080fd5b506101e6806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80632e64cec11461003b578063f58a28451461005c575b600080fd5b610043610078565b60405161005394939291906100d3565b60405180910390f35b61007660048036038101906100719190610149565b610098565b005b600080600080600054600154600254600354935093509350935090919293565b8360008190555082600181905550816002819055508060038190555050505050565b6000819050919050565b6100cd816100ba565b82525050565b60006080820190506100e860008301876100c4565b6100f560208301866100c4565b61010260408301856100c4565b61010f60608301846100c4565b95945050505050565b600080fd5b610126816100ba565b811461013157600080fd5b50565b6000813590506101438161011d565b92915050565b6000806000806080858703121561016357610162610118565b5b600061017187828801610134565b945050602061018287828801610134565b935050604061019387828801610134565b92505060606101a487828801610134565b9150509295919450925056fea26469706673582212207fa7ea02e09f6434989a440d717016a1778a5128a9adacd0b5df40e5890bd78a64736f6c63430008120033"
+//data, _ := contract.EncodeABI("balanceOf", web3.Eth.Address())
+//fmt.Printf("%x\n", data)
+//
+//balance, err := contract.Call("balanceOf", web3.Eth.Address())
+//if err != nil {
+//	panic(err)
+//}
+//fmt.Printf("Balance of %v is %v\n", web3.Eth.Address(), balance)
+//
+//allowance, err := contract.Call("allowance", web3.Eth.Address(), "0x0000000000000000000000000000000000000002")
+//if err != nil {
+//	panic(err)
+//}
+//
+//fmt.Printf("Allowance is %v\n", allowance)
+//approveInputData, err := contract.Methods("approve").Inputs.Pack("0x0000000000000000000000000000000000000002", web3.Utils.ToWei("0.2"))
+//if err != nil {
+//	panic(err)
+//}
+//// fmt.Println(approveInputData)
+//
+//tokenAddress := common.HexToAddress(tokenAddr)
+//
+//call := &types.CallMsg{
+//	From: web3.Eth.Address(),
+//	To:   tokenAddress,
+//	Data: approveInputData,
+//	Gas:  types.NewCallMsgBigInt(big.NewInt(types.MAX_GAS_LIMIT)),
+//}
+//// fmt.Printf("call %v\n", call)
+//gasLimit, err := web3.Eth.EstimateGas(call)
+//if err != nil {
+//	panic(err)
+//}
+//fmt.Printf("Estimate gas limit %v\n", gasLimit)
+//nonce, err := web3.Eth.GetNonce(web3.Eth.Address(), nil)
+//if err != nil {
+//	panic(err)
+//}
+//txHash, err := web3.Eth.SyncSendRawTransaction(
+//	common.HexToAddress(tokenAddr),
+//	big.NewInt(0),
+//	nonce,
+//	gasLimit,
+//	web3.Utils.ToGWei(1),
+//	approveInputData,
+//)
+//if err != nil {
+//	panic(err)
+//}
+//fmt.Printf("Send approve tx hash %v\n", txHash)
+//}
 
-	client, err := ethclient.Dial(rpcProvider)
+func getAccountAuth(client *ethclient.Client, accountAddress string) *bind.TransactOpts {
+
+	privateKey, err := crypto.HexToECDSA(accountAddress)
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	privateKey, err := crypto.HexToECDSA(privateKey1)
-	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		log.Fatal("error casting public key to ECDSA")
+		panic("invalid key")
 	}
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+
+	//fetch the last use nonce of account
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
+	}
+	fmt.Println("nounce=", nonce)
+	chainID, err := client.ChainID(context.Background())
+	if err != nil {
+		panic(err)
 	}
 
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	auth := bind.NewKeyedTransactor(privateKey)
+	if err != nil {
+		panic(err)
+	}
 	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)     // in wei
-	auth.GasLimit = uint64(300000) // in units
+	auth.Value = big.NewInt(0)      // in wei
+	auth.GasLimit = uint64(6000000) // in units
 	auth.GasPrice = gasPrice
 
-	input := "1.0"
-	address, tx, instance, err := store.DeployStore(auth, client, input)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return auth
+}
 
-	chainId := int64(1337)
-	if err := web3.Eth.SetAccount(privateKey); err != nil {
-		panic(err)
-	}
-	web3.Eth.SetChainId(chainId)
-	tokenAddr := "0x623639bA2c3ffc7b7d8879e8F3e4CFC905f7A3C7"
-	contract, err := web3.Eth.NewContract(abiStr, tokenAddr)
+func deployNewContract() {
+	// address of etherum env
+	client, err := ethclient.Dial("http://127.0.0.1:7545")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Contract address: ", contract.Address())
 
-	// We need to change that to get the 1st element of retrieve
-	totalSupply, err := contract.Call("retrieve")
+	// create auth and transaction package for deploying smart contract
+	auth := getAccountAuth(client, "f6f0d6a6e285a9c3fe603833932550c7b6745faf8133eba911789b498c4bdb5a")
+
+	//deploying smart contract
+	deployedContractAddress, tx, instance, err := api.DeployApi(auth, client) //api is redirected from api directory from our contract go file
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Total supply %v\n", totalSupply)
+	print(tx)
+	print(instance)
 
-	//data, _ := contract.EncodeABI("balanceOf", web3.Eth.Address())
-	//fmt.Printf("%x\n", data)
-	//
-	//balance, err := contract.Call("balanceOf", web3.Eth.Address())
-	//if err != nil {
-	//	panic(err)
-	//}
-	//fmt.Printf("Balance of %v is %v\n", web3.Eth.Address(), balance)
-	//
-	//allowance, err := contract.Call("allowance", web3.Eth.Address(), "0x0000000000000000000000000000000000000002")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//fmt.Printf("Allowance is %v\n", allowance)
-	//approveInputData, err := contract.Methods("approve").Inputs.Pack("0x0000000000000000000000000000000000000002", web3.Utils.ToWei("0.2"))
-	//if err != nil {
-	//	panic(err)
-	//}
-	//// fmt.Println(approveInputData)
-	//
-	//tokenAddress := common.HexToAddress(tokenAddr)
-	//
-	//call := &types.CallMsg{
-	//	From: web3.Eth.Address(),
-	//	To:   tokenAddress,
-	//	Data: approveInputData,
-	//	Gas:  types.NewCallMsgBigInt(big.NewInt(types.MAX_GAS_LIMIT)),
-	//}
-	//// fmt.Printf("call %v\n", call)
-	//gasLimit, err := web3.Eth.EstimateGas(call)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//fmt.Printf("Estimate gas limit %v\n", gasLimit)
-	//nonce, err := web3.Eth.GetNonce(web3.Eth.Address(), nil)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//txHash, err := web3.Eth.SyncSendRawTransaction(
-	//	common.HexToAddress(tokenAddr),
-	//	big.NewInt(0),
-	//	nonce,
-	//	gasLimit,
-	//	web3.Utils.ToGWei(1),
-	//	approveInputData,
-	//)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//fmt.Printf("Send approve tx hash %v\n", txHash)
+	fmt.Println(deployedContractAddress.Hex()) // print deployed contract address
 }
