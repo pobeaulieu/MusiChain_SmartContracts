@@ -1,25 +1,24 @@
 package services
 
 import (
+	"backend/dao"
 	"backend/domain"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 	"os"
-	"strconv"
 	"time"
 )
 
 func Login(c *fiber.Ctx, username string, password []byte) (*domain.User, error) {
-	u, err := domain.GetUser(username)
+	u, err := dao.GetUserFromUsername(username)
 
 	if err := bcrypt.CompareHashAndPassword(u.Password, password); err != nil {
 		return nil, fmt.Errorf("incorrect password")
 	}
-
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(u.Id)),
+		Issuer:    u.Id.String(),
 		ExpiresAt: time.Now().Add(time.Hour * 1).Unix(), //JWT valide 1 heure
 	})
 

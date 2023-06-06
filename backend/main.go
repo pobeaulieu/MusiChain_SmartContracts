@@ -15,7 +15,9 @@ func main() {
 		panic("could not migrate the database")
 	}
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 50 * 1024 * 1024, // 50 MB in bytes
+	})
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
