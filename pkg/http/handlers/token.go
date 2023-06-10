@@ -7,7 +7,6 @@ import (
 	"musichain/pkg/dao"
 	"musichain/pkg/http/requests"
 	"musichain/pkg/services"
-	"musichain/pkg/services/web3"
 	"strconv"
 )
 
@@ -98,7 +97,7 @@ func CreateTokens(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, errService.Error())
 	}
 
-	tokenList, errService := web3.CreateTokens(request, musicMedia)
+	tokenList, errService := services.CreateTokens(request, musicMedia)
 
 	if errService != nil {
 		return fiber.NewError(fiber.StatusBadRequest, errService.Error())
