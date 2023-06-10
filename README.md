@@ -1,8 +1,6 @@
-# Get started
-## Step 1: Add root certification authority to your browser
-`rootCA.crt`
 
-## Step 2: Go service 
+
+# Go service 
 install go: https://go.dev/dl/
 #### Dependencies 
 `cd backend`
@@ -19,13 +17,8 @@ install go: https://go.dev/dl/
 - `cd backend`
 - `go run main.go`
 
-## Step 3: React Webapp
-- `cd frontend`
-- `npm install`
-#### Start app 
-
-- Windows-> `npm run start`
-- Unix-> `npm run startu`
+## React Webapp
+See MusiChain_UI repo https://github.com/pobeaulieu/MusiChain_UI
 
 # Database
 The database is SQLite and is stored in the file system for ease of use (MusiChain.db). 
