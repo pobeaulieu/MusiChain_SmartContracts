@@ -1,9 +1,9 @@
 package web3
 
 import (
-	"backend/domain"
-	"backend/http/requests"
 	"fmt"
+	"musichain/pkg/domain"
+	"musichain/pkg/http/requests"
 )
 
 type Token struct {

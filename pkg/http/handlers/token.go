@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"backend/dao"
-	"backend/http/requests"
-	"backend/services"
-	"backend/services/web3"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"musichain/pkg/dao"
+	"musichain/pkg/http/requests"
+	"musichain/pkg/services"
+	"musichain/pkg/services/web3"
 	"strconv"
 )
 

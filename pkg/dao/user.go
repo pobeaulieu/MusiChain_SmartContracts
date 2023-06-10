@@ -1,9 +1,9 @@
 package dao
 
 import (
-	"backend/database"
-	"backend/domain"
 	"github.com/google/uuid"
+	"musichain/pkg/database"
+	"musichain/pkg/domain"
 )
 
 func GetUserFromUsername(username string) (*domain.User, error) {

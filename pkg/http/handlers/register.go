@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"backend/services"
 	"github.com/gofiber/fiber/v2"
+	"musichain/pkg/services"
 )
 
 func RegisterUser(c *fiber.Ctx) error {

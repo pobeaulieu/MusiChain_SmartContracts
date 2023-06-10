@@ -1,13 +1,13 @@
 package services
 
 import (
-	"backend/dao"
-	"backend/domain"
-	"backend/http/requests"
 	"fmt"
 	"github.com/google/uuid"
 	"io"
 	"mime/multipart"
+	"musichain/pkg/dao"
+	"musichain/pkg/domain"
+	"musichain/pkg/http/requests"
 	"os"
 )
 

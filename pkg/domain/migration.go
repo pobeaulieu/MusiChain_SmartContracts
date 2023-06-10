@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"backend/database"
+	"musichain/pkg/database"
 )
 
 func AutoMigrate() error {

@@ -1,12 +1,12 @@
 package services
 
 import (
-	"backend/dao"
-	"backend/domain"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+	"musichain/pkg/dao"
+	"musichain/pkg/domain"
 	"os"
 	"time"
 )

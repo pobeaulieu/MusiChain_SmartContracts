@@ -1,8 +1,8 @@
 package requests
 
 import (
-	"backend/domain"
 	"mime/multipart"
+	"musichain/pkg/domain"
 )
 
 type CreateTokenRequest struct {

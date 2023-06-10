@@ -1,11 +1,11 @@
 package main
 
 import (
-	"backend/database"
-	"backend/domain"
-	"backend/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"musichain/pkg/database"
+	"musichain/pkg/domain"
+	"musichain/pkg/routes"
 )
 
 func main() {

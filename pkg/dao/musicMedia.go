@@ -1,9 +1,9 @@
 package dao
 
 import (
-	"backend/database"
-	"backend/domain"
 	"github.com/google/uuid"
+	"musichain/pkg/database"
+	"musichain/pkg/domain"
 )
 
 func InsertMusicMedia(id uuid.UUID, name string, creator *domain.Creator, mp3Path string, imgPath string) (*domain.MusicMedia, error) {
