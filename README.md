@@ -1,9 +1,8 @@
 
-
 # Go service 
 install go: https://go.dev/dl/
-#### Dependencies 
-`cd backend`
+
+#### Dependencies
 - `go get github.com/gofiber/fiber/v2`
 - `go get -u gorm.io/gorm`
 - `go get -u gorm.io/driver/sqlite`
@@ -13,9 +12,9 @@ install go: https://go.dev/dl/
 - `go get golang.org/x/crypto/bcrypt` 
 - `go get github.com/joho/godotenv`
 
-#### Start app 
-- `cd backend`
-- `go run main.go`
+or 
+
+`go mod tidy`
 
 ## React Webapp
 See MusiChain_UI repo https://github.com/pobeaulieu/MusiChain_UI
