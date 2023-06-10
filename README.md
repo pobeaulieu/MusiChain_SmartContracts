@@ -23,5 +23,5 @@ See MusiChain_UI repo https://github.com/pobeaulieu/MusiChain_UI
 The database is SQLite and is stored in the file system for ease of use (MusiChain.db). 
 
 # API doc: Postman
-import MusiChain.postman_collection.json in Postman and add rootCa.crt in the settings. 
+import `MusiChain.postman_collection.json` in Postman and add `rootCA.crt` in the settings. 
 
