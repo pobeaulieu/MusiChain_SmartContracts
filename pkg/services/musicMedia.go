@@ -30,7 +30,7 @@ func CreateMusicMedia(request requests.CreateTokenRequest) (*domain.MusicMedia, 
 	}
 
 	// Insert the MusicMedia into the database
-	return dao.InsertMusicMedia(musicMediaID, request.Name, request.Creator, mp3Path, imgPath)
+	return dao.InsertMusicMedia(musicMediaID, request.Name, request.CreatorAddress, mp3Path, imgPath)
 }
 
 func saveFile(file *multipart.FileHeader, path string) error {

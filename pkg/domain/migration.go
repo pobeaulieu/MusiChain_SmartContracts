@@ -5,5 +5,5 @@ import (
 )
 
 func AutoMigrate() error {
-	return database.DB.AutoMigrate(&User{}, &Creator{}, &MusicMedia{})
+	return database.DB.AutoMigrate(&MusicMedia{})
 }

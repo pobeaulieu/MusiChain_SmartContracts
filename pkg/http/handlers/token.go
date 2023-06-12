@@ -1,29 +1,14 @@
 package handlers
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
-	"musichain/pkg/dao"
 	"musichain/pkg/http/requests"
 	"musichain/pkg/services"
 	"strconv"
 )
 
 func CreateTokens(c *fiber.Ctx) error {
-	jwtToken, err := services.VerifyAuth(c)
-	if err != nil {
-		return fiber.NewError(fiber.StatusUnauthorized, "user must be authenticated")
-	}
-
-	claims := jwtToken.Claims.(*jwt.StandardClaims)
-	uuidObj, err := uuid.Parse(claims.Issuer)
-	creator, err := dao.GetCreatorFromId(uuidObj)
-
-	if err != nil {
-		return fiber.NewError(fiber.StatusUnauthorized, "user must exist and be a creator. ")
-	}
-
+	creatorAddress := c.FormValue("creatorAddress")
 	name := c.FormValue("name")
 	numShares := c.FormValue("numShares")
 	price := c.FormValue("price")
@@ -32,8 +17,12 @@ func CreateTokens(c *fiber.Ctx) error {
 	mp3, errMp3 := c.FormFile("mp3")
 	img, errImg := c.FormFile("img")
 
-	if name == "" {
+	if creatorAddress == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "Name field is required.")
+	}
+
+	if name == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Creator addrer field is required.")
 	}
 
 	if numShares == "" {
@@ -81,7 +70,7 @@ func CreateTokens(c *fiber.Ctx) error {
 	}
 
 	request := requests.CreateTokenRequest{
-		Creator:        creator,
+		CreatorAddress: creatorAddress,
 		Name:           name,
 		NumShares:      uint(numSharesFormatted),
 		Price:          priceFormatted,

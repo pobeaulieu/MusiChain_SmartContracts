@@ -6,13 +6,13 @@ import (
 	"musichain/pkg/domain"
 )
 
-func InsertMusicMedia(id uuid.UUID, name string, creator *domain.Creator, mp3Path string, imgPath string) (*domain.MusicMedia, error) {
+func InsertMusicMedia(id uuid.UUID, name string, creatorAddress string, mp3Path string, imgPath string) (*domain.MusicMedia, error) {
 	musicMedia := domain.MusicMedia{
-		Id:        id,
-		Name:      name,
-		CreatorID: creator.Id,
-		Mp3Path:   mp3Path,
-		ImgPath:   imgPath,
+		Id:             id,
+		Name:           name,
+		CreatorAddress: creatorAddress,
+		Mp3Path:        mp3Path,
+		ImgPath:        imgPath,
 	}
 
 	tx := database.DB.Begin() // Start a transaction

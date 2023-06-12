@@ -2,11 +2,10 @@ package requests
 
 import (
 	"mime/multipart"
-	"musichain/pkg/domain"
 )
 
 type CreateTokenRequest struct {
-	Creator        *domain.Creator
+	CreatorAddress string
 	Name           string
 	NumShares      uint
 	Price          float64

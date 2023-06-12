@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"musichain/pkg/domain"
 	"musichain/pkg/http/requests"
 )
@@ -11,7 +12,7 @@ type Token struct {
 	Div              float64
 	InitialTktPool   uint
 	RemainingTktPool uint
-	MusicMedia       *domain.MusicMedia
+	MusicMediaId     uuid.UUID
 }
 
 func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicMedia) ([]Token, error) {
@@ -24,7 +25,7 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 			Div:              request.Div,
 			InitialTktPool:   request.InitialTktPool,
 			RemainingTktPool: request.InitialTktPool,
-			MusicMedia:       musicMedia,
+			MusicMediaId:     musicMedia.Id,
 		}
 		tokenList[i] = token
 	}
