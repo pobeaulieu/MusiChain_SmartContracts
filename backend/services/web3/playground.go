@@ -1,13 +1,16 @@
 package web3
 
 import (
-	"backend/services/api"
 	"context"
 	"crypto/ecdsa"
+	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"io/ioutil"
 	"log"
 	"math/big"
 )
@@ -138,65 +141,136 @@ func PrintTest() {
 //fmt.Printf("Send approve tx hash %v\n", txHash)
 //}
 
-func getAccountAuth(client *ethclient.Client, accountAddress string) *bind.TransactOpts {
+//func getAccountAuth(client *ethclient.Client, accountAddress string) *bind.TransactOpts {
+//
+//	privateKey, err := crypto.HexToECDSA(accountAddress)
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	publicKey := privateKey.Public()
+//	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+//	if !ok {
+//		panic("invalid key")
+//	}
+//
+//	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+//
+//	//fetch the last use nonce of account
+//	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+//	if err != nil {
+//		panic(err)
+//	}
+//	fmt.Println("nounce=", nonce)
+//	chainID, err := client.ChainID(context.Background())
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
+//	gasPrice, err := client.SuggestGasPrice(context.Background())
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	if err != nil {
+//		panic(err)
+//	}
+//	auth.Nonce = big.NewInt(int64(nonce))
+//	auth.Value = big.NewInt(0)      // in wei
+//	auth.GasLimit = uint64(6000000) // in units
+//	auth.GasPrice = gasPrice
+//
+//	return auth
+//}
+//
+//func deployNewContract() {
+//	// address of etherum env
+//	client, err := ethclient.Dial("http://127.0.0.1:7545")
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	// create auth and transaction package for deploying smart contract
+//	auth := getAccountAuth(client, "36cdaf7554327b0ae13eb64967559137f1183a901cdea654acbd736a6317c8ac")
+//
+//	//deploying smart contract
+//	deployedContractAddress, tx, instance, err := api.DeployApi(auth, client) //api is redirected from api directory from our contract go file
+//	if err != nil {
+//		panic(err)
+//	}
+//	print(tx)
+//	print(instance)
+//
+//	fmt.Println(deployedContractAddress.Hex()) // print deployed contract address
+//}
 
-	privateKey, err := crypto.HexToECDSA(accountAddress)
+func deployNewContract() {
+	// Connect to Ganache
+	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to connect to Ganache: %v", err)
 	}
 
+	// Read private key
+	privateKey, err := crypto.HexToECDSA("36cdaf7554327b0ae13eb64967559137f1183a901cdea654acbd736a6317c8ac")
+	if err != nil {
+		log.Fatalf("Failed to parse private key: %v", err)
+	}
+
+	// Derive the public key
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		panic("invalid key")
+		log.Fatal("Failed to derive ECDSA public key")
 	}
 
+	// Get the address
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 
-	//fetch the last use nonce of account
+	// Get the nonce
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
-		panic(err)
-	}
-	fmt.Println("nounce=", nonce)
-	chainID, err := client.ChainID(context.Background())
-	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err != nil {
-		panic(err)
-	}
+
+	auth := bind.NewKeyedTransactor(privateKey)
 	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)      // in wei
-	auth.GasLimit = uint64(6000000) // in units
+	auth.GasLimit = uint64(7721975) // in units
 	auth.GasPrice = gasPrice
 
-	return auth
-}
-
-func deployNewContract() {
-	// address of etherum env
-	client, err := ethclient.Dial("http://127.0.0.1:7545")
+	// Read the contract bytecode
+	bytecode, err := ioutil.ReadFile("../build/contracts_musiChain_sol_MusiChain.bin")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	// create auth and transaction package for deploying smart contract
-	auth := getAccountAuth(client, "f6f0d6a6e285a9c3fe603833932550c7b6745faf8133eba911789b498c4bdb5a")
-
-	//deploying smart contract
-	deployedContractAddress, tx, instance, err := api.DeployApi(auth, client) //api is redirected from api directory from our contract go file
+	// Read and parse the ABI from file
+	abiFile, err := ioutil.ReadFile("../build/contracts_musiChain_sol_MusiChain.abi")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	print(tx)
-	print(instance)
 
-	fmt.Println(deployedContractAddress.Hex()) // print deployed contract address
+	var parsedABI abi.ABI
+	if err := json.Unmarshal(abiFile, &parsedABI); err != nil {
+		log.Fatal(err)
+	}
+
+	input := append([]byte(nil), bytecode...) // This could be contract constructor parameters, if necessary
+
+	// Deploy the contract
+	tx := types.NewContractCreation(nonce, big.NewInt(0), uint64(300000), gasPrice, input)
+	signer := types.NewEIP155Signer(big.NewInt(1337)) // assuming ChainID is 1337
+	signedTx, _ := types.SignTx(tx, signer, privateKey)
+
+	err = client.SendTransaction(context.Background(), signedTx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Tx sent: %s", signedTx.Hash().Hex()) // Output the transaction hash
 }

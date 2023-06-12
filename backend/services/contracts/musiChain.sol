@@ -1,36 +1,25 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-pragma solidity >=0.8.2 <0.9.0;
+import "C:/Users/eliot/Desktop/MGL850/MusiChain/node_modules/@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-/**
- * @title MusiChain
- * @dev Store & retrieve value in a variable
- * @custom:dev-run-script ./scripts/deploy_with_ethers.ts
- */
-contract MusiChain {
 
-    uint256 number;
-    uint256 tokenPrice;
-    uint256 dividend;
-    uint256 initialTicketPool;
+contract MusiChain is ERC1155 {
 
-    /**
-     * @dev Store value in variable
-     * @param num value to store
-     * @param price of the token
-     */
-    function store(uint256 num, uint256 price, uint256 divi, uint256 initial) public {
-        number = num;
-        tokenPrice = price;
-        dividend = divi;
-        initialTicketPool = initial;
+    mapping(address => uint256) public revenue;
+
+    constructor() ERC1155("https://myapi.com/api/token/{id}.json") {
     }
 
-    /**
-     * @dev Return value
-     * @return value of 'number'
-     */
-    function retrieve() public view returns (uint256, uint256, uint256, uint256){
-        return (number, tokenPrice, dividend, initialTicketPool);
+    function mint(address to, uint256 tokenId, uint256 amount, bytes memory data) public {
+        _mint(to, tokenId, amount, data);
+    }
+
+    function distributeRevenue(address recipient, uint256 amount) public {
+        revenue[recipient] += amount;
+    }
+
+    function getRevenue(address recipient) public view returns (uint256) {
+        return revenue[recipient];
     }
 }
