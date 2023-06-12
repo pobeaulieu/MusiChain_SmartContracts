@@ -7,7 +7,7 @@ import (
 	"musichain/pkg/http/requests"
 )
 
-type Token struct {
+type TokenShare struct {
 	Price            float64
 	Div              float64
 	InitialTktPool   uint
@@ -15,12 +15,21 @@ type Token struct {
 	MusicMediaId     uuid.UUID
 }
 
-func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicMedia) ([]Token, error) {
-	tokenList := make([]Token, request.NumShares)
+type Token struct {
+	NumShares        uint
+	Price            float64
+	Div              float64
+	InitialTktPool   uint
+	RemainingTktPool uint
+	MusicMediaId     uuid.UUID
+}
+
+func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicMedia) ([]TokenShare, error) {
+	tokenList := make([]TokenShare, request.NumShares)
 
 	for i := uint(0); i < request.NumShares; i++ {
 		// TODO: Put the token in the Blockchain (not in the DB)
-		token := Token{
+		token := TokenShare{
 			Price:            request.Price,
 			Div:              request.Div,
 			InitialTktPool:   request.InitialTktPool,
@@ -45,6 +54,7 @@ func GetCreatedTokens(address string) ([]Token, error) {
 	for i := uint(0); i < 3; i++ {
 		// TODO: Put the token in the Blockchain (not in the DB)
 		token := Token{
+			NumShares:        200,
 			Price:            2,
 			Div:              0.1,
 			InitialTktPool:   100000,
