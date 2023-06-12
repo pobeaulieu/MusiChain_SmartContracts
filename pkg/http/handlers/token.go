@@ -97,3 +97,16 @@ func CreateTokens(c *fiber.Ctx) error {
 	})
 
 }
+
+func GetCreatedTokens(c *fiber.Ctx) error {
+	creatorAddress := c.FormValue("creatorAddress")
+	if creatorAddress == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Name field is required.")
+	}
+
+	tokenList, _ := services.GetCreatedTokens(creatorAddress)
+
+	return c.JSON(fiber.Map{
+		"tokenList": tokenList,
+	})
+}

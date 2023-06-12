@@ -7,4 +7,5 @@ import (
 
 func Setup(app *fiber.App) {
 	app.Post("/api/createTokens", handlers.CreateTokens)
+	app.Get("/api/getcreatedtokens", handlers.GetCreatedTokens)
 }

@@ -34,3 +34,27 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 
 	return tokenList, nil
 }
+
+func GetCreatedTokens(address string) ([]Token, error) {
+	// This is a mock for temporary development
+	tokenList := make([]Token, 3)
+
+	inputString := "082c6a7f-3dce-4523-9f45-64df69da4e41"
+	uuid := uuid.NewSHA1(uuid.NameSpaceDNS, []byte(inputString))
+
+	for i := uint(0); i < 3; i++ {
+		// TODO: Put the token in the Blockchain (not in the DB)
+		token := Token{
+			Price:            2,
+			Div:              0.1,
+			InitialTktPool:   100000,
+			RemainingTktPool: 54590,
+			MusicMediaId:     uuid,
+		}
+		tokenList[i] = token
+	}
+
+	fmt.Println(tokenList)
+
+	return tokenList, nil
+}

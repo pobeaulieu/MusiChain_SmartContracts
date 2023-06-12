@@ -18,12 +18,12 @@
 						{
 							"key": "img",
 							"type": "file",
-							"src": "/Users/pobeaulieu/Desktop/MusiChain/test_img/time_and_time_again.jpeg"
+							"src": "/Users/pobeaulieu/Desktop/MusiChain_UI/testmedia/time_and_time_again.jpeg"
 						},
 						{
 							"key": "mp3",
 							"type": "file",
-							"src": "/Users/pobeaulieu/Desktop/MusiChain/test_mp3/time_and_time_again.mp3"
+							"src": "/Users/pobeaulieu/Desktop/MusiChain_UI/testmedia/time_and_time_again.mp3"
 						},
 						{
 							"key": "name",
@@ -49,6 +49,11 @@
 							"key": "initialTktPool",
 							"value": "20000",
 							"type": "text"
+						},
+						{
+							"key": "creatorAddress",
+							"value": "0xF2320835E6edA0c87783063B8215E2A624624CdE",
+							"type": "text"
 						}
 					]
 				},
@@ -62,6 +67,39 @@
 					"path": [
 						"api",
 						"createTokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCreatedTokens",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "creatorAddress",
+							"value": "09sdjndksn",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:8000/api/getcreatedtokens",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"getcreatedtokens"
 					]
 				}
 			},
