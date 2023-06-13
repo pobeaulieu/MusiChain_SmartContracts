@@ -81,14 +81,13 @@
 				"method": "GET",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "creatorAddress",
-							"value": "09sdjndksn",
-							"type": "text"
+					"mode": "raw",
+					"raw": "{\n    \"creatorAddress\": \"0x39945E541AfFdDeb5E4b4BCFbdCfCdAC8eF21E6c\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
 					"raw": "https://localhost:8000/api/getcreatedtokens",
@@ -114,14 +113,13 @@
 				"method": "GET",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "id",
-							"value": "7f10426c-0936-43fd-b2a2-3f59f830fab9",
-							"type": "text"
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"7f10426c-0936-43fd-b2a2-3f59f830fab9\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
 					"raw": "https://localhost:8000/api/getmusicmedia",
