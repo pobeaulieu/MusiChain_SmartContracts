@@ -110,3 +110,19 @@ func GetCreatedTokens(c *fiber.Ctx) error {
 		"tokenList": tokenList,
 	})
 }
+
+func GetMusicMedia(c *fiber.Ctx) error {
+	id := c.FormValue("id")
+	if id == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Id field is required.")
+	}
+
+	musicMedia, err := services.GetMusicMedia(id)
+
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(musicMedia)
+
+}

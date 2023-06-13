@@ -104,6 +104,39 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GetMusicMedia",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "7f10426c-0936-43fd-b2a2-3f59f830fab9",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://localhost:8000/api/getmusicmedia",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"getmusicmedia"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
