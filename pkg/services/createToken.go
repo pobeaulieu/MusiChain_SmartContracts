@@ -6,6 +6,7 @@ import (
 	"github.com/gofrs/uuid"
 	uuid2 "github.com/google/uuid"
 	"io/ioutil"
+	"math/rand"
 	"musichain/pkg/dao"
 	"musichain/pkg/domain"
 	"musichain/pkg/http/requests"
@@ -53,17 +54,17 @@ func GetCreatedTokens(address string) ([]Token, error) {
 	// This is a mock for temporary development
 	tokenList := make([]Token, 3)
 
-	inputString := "082c6a7f-3dce-4523-9f45-64df69da4e41"
+	inputString := "7f10426c-0936-43fd-b2a2-3f59f830fab9"
 	id, _ := uuid.FromString(inputString)
 
 	for i := uint(0); i < 3; i++ {
 		// TODO: Put the token in the Blockchain (not in the DB)
 		token := Token{
-			NumShares:        200,
-			Price:            2,
-			Div:              0.1,
-			InitialTktPool:   100000,
-			RemainingTktPool: 54590,
+			NumShares:        uint(rand.Int()),
+			Price:            float64(rand.Float64()),
+			Div:              float64(rand.Float64()),
+			InitialTktPool:   uint(rand.Int()),
+			RemainingTktPool: uint(rand.Int()),
 			MusicMediaId:     id,
 		}
 		tokenList[i] = token
