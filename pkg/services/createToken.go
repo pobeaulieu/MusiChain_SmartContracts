@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofrs/uuid"
 	uuid2 "github.com/google/uuid"
@@ -45,8 +44,6 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 		tokenList[i] = token
 	}
 
-	fmt.Println(tokenList)
-
 	return tokenList, nil
 }
 
@@ -70,33 +67,27 @@ func GetCreatedTokens(address string) ([]Token, error) {
 		tokenList[i] = token
 	}
 
-	fmt.Println(tokenList)
-
 	return tokenList, nil
 }
 
 func GetMusicMedia(id string) (*response.MusicMediaResponse, error) {
 	uuidMusicMedia, err := uuid.FromString(id)
 	if err != nil {
-		fmt.Println(err)
 		return nil, fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	musicMedia, err := dao.GetMusicMedia(uuid2.UUID(uuidMusicMedia))
 	if err != nil {
-		fmt.Println(err)
 		return nil, fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	mp3File, err := ioutil.ReadFile(musicMedia.Mp3Path)
 	if err != nil {
-		fmt.Println(err)
 		return nil, fiber.NewError(fiber.StatusInternalServerError, "Error reading MP3 file.")
 	}
 
 	imgFile, err := ioutil.ReadFile(musicMedia.ImgPath)
 	if err != nil {
-		fmt.Println(err)
 		return nil, fiber.NewError(fiber.StatusInternalServerError, "Error reading image file.")
 	}
 

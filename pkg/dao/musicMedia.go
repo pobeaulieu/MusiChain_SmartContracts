@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"musichain/pkg/database"
 	"musichain/pkg/domain"
@@ -30,7 +29,6 @@ func InsertMusicMedia(id uuid.UUID, name string, creatorAddress string, mp3Path 
 
 func GetMusicMedia(id uuid.UUID) (*domain.MusicMedia, error) {
 	var musicMedia domain.MusicMedia
-	fmt.Println("inside", id)
 	database.DB.First(&musicMedia, id)
 
 	return &musicMedia, nil
