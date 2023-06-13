@@ -99,10 +99,12 @@ func CreateTokens(c *fiber.Ctx) error {
 }
 
 func GetCreatedTokens(c *fiber.Ctx) error {
-	creatorAddress := c.FormValue("creatorAddress")
-	if creatorAddress == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "Name field is required.")
+	var request map[string]interface{}
+	if err := c.BodyParser(&request); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
 	}
+
+	creatorAddress, _ := request["creatorAddress"].(string)
 
 	tokenList, _ := services.GetCreatedTokens(creatorAddress)
 
@@ -112,10 +114,12 @@ func GetCreatedTokens(c *fiber.Ctx) error {
 }
 
 func GetMusicMedia(c *fiber.Ctx) error {
-	id := c.FormValue("id")
-	if id == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "Id field is required.")
+	var request map[string]interface{}
+	if err := c.BodyParser(&request); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
 	}
+
+	id, _ := request["id"].(string)
 
 	musicMedia, err := services.GetMusicMedia(id)
 
