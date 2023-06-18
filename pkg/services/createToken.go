@@ -44,6 +44,10 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 		tokenList[i] = token
 	}
 
+	// Il faut changer les adresses
+	// TODO : Remplacer UUID par int64 pour tokenID
+	mintToken(1, int64(request.InitialTktPool), "adresseContrat", "AdresseCreateur")
+
 	return tokenList, nil
 }
 
