@@ -21,7 +21,7 @@ func PrintTest() {
 	fmt.Println("Hello, World!")
 }
 
-const privateKey = "6dac56db2f3c291488988bf46fc53b46add2590bd9b31eed5e3e187e01e78d1a"
+const privateKey = "6bea4a3052873c90d8b4fd7b5fcb65cac1fd5b7b51461934b13be0ffc65f0aed"
 
 func deployNewTokenContract() {
 	// Connect to Ganache
