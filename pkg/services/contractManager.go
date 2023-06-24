@@ -21,7 +21,7 @@ func PrintTest() {
 	fmt.Println("Hello, World!")
 }
 
-const privateKey = "6bea4a3052873c90d8b4fd7b5fcb65cac1fd5b7b51461934b13be0ffc65f0aed"
+const privateKey = "8358c8c30ddb2f111073f8e53fe955fcbf768f11b2e5a9d2c044fdff8e3cea30"
 
 func deployNewTokenContract() {
 	// Connect to Ganache
@@ -39,7 +39,7 @@ func deployNewTokenContract() {
 	auth := bind.NewKeyedTransactor(privateKey)
 	auth.Value = big.NewInt(0)            // in wei
 	auth.GasLimit = uint64(6721975)       // reduce this to a reasonable amount
-	auth.GasPrice = big.NewInt(875000000) // 20 Gwei, as provided by Ganache
+	auth.GasPrice = big.NewInt(874000000) // 20 Gwei, as provided by Ganache
 	// Read the contract bytecode
 	bytecode, err := ioutil.ReadFile("build/contracts_musiChain_sol_MusiChain.bin")
 	if err != nil {

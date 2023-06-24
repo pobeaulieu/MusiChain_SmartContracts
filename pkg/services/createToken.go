@@ -2,14 +2,13 @@ package services
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofrs/uuid"
-	uuid2 "github.com/google/uuid"
 	"io/ioutil"
 	"math/rand"
 	"musichain/pkg/dao"
 	"musichain/pkg/domain"
 	"musichain/pkg/http/requests"
 	"musichain/pkg/http/response"
+	"strconv"
 )
 
 type TokenShare struct {
@@ -17,7 +16,7 @@ type TokenShare struct {
 	Div              float64
 	InitialTktPool   uint
 	RemainingTktPool uint
-	MusicMediaId     uuid.UUID
+	MusicMediaId     uint
 }
 
 type Token struct {
@@ -26,7 +25,7 @@ type Token struct {
 	Div              float64
 	InitialTktPool   uint
 	RemainingTktPool uint
-	MusicMediaId     uuid.UUID
+	MusicMediaId     uint
 }
 
 func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicMedia) ([]TokenShare, error) {
@@ -39,14 +38,12 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 			Div:              request.Div,
 			InitialTktPool:   request.InitialTktPool,
 			RemainingTktPool: request.InitialTktPool,
-			MusicMediaId:     uuid.UUID(musicMedia.Id),
+			MusicMediaId:     musicMedia.Id,
 		}
 		tokenList[i] = token
 	}
 
-	// Il faut changer les adresses
-	// TODO : Remplacer UUID par int64 pour tokenID
-	mintToken(1, int64(request.InitialTktPool), "adresseContrat", "AdresseCreateur")
+	mintToken(int64(musicMedia.Id), int64(request.InitialTktPool), "adresseContrat", request.CreatorAddress)
 
 	return tokenList, nil
 }
@@ -54,9 +51,6 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 func GetCreatedTokens(address string) ([]Token, error) {
 	// This is a mock for temporary development
 	tokenList := make([]Token, 3)
-
-	inputString := "7f10426c-0936-43fd-b2a2-3f59f830fab9"
-	id, _ := uuid.FromString(inputString)
 
 	for i := uint(0); i < 3; i++ {
 		// TODO: Put the token in the Blockchain (not in the DB)
@@ -66,7 +60,7 @@ func GetCreatedTokens(address string) ([]Token, error) {
 			Div:              float64(rand.Float64()),
 			InitialTktPool:   uint(rand.Int()),
 			RemainingTktPool: uint(rand.Int()),
-			MusicMediaId:     id,
+			MusicMediaId:     1,
 		}
 		tokenList[i] = token
 	}
@@ -75,12 +69,13 @@ func GetCreatedTokens(address string) ([]Token, error) {
 }
 
 func GetMusicMedia(id string) (*response.MusicMediaResponse, error) {
-	uuidMusicMedia, err := uuid.FromString(id)
+
+	musicMediaId, err := strconv.Atoi(id)
 	if err != nil {
 		return nil, fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	musicMedia, err := dao.GetMusicMedia(uuid2.UUID(uuidMusicMedia))
+	musicMedia, err := dao.GetMusicMedia(uint(musicMediaId))
 	if err != nil {
 		return nil, fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
