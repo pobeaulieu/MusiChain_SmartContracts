@@ -42,8 +42,9 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 		}
 		tokenList[i] = token
 	}
+	// TODO Deploy contract and mint on the adress where it is deployed
 
-	mintToken(int64(musicMedia.Id), int64(request.InitialTktPool), "adresseContrat", request.CreatorAddress)
+	// mintToken(int64(musicMedia.Id), int64(request.InitialTktPool), "adresseContrat", request.CreatorAddress)
 
 	return tokenList, nil
 }
@@ -51,9 +52,9 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 func GetCreatedTokens(address string) ([]Token, error) {
 	// This is a mock for temporary development
 	tokenList := make([]Token, 3)
-
+	// TODO: Nico ajoute lappel au blockchain pour obtenir tous les tokens crees avec address en parametre
 	for i := uint(0); i < 3; i++ {
-		// TODO: Put the token in the Blockchain (not in the DB)
+
 		token := Token{
 			NumShares:        uint(rand.Int()),
 			Price:            float64(rand.Float64()),

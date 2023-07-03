@@ -26,21 +26,27 @@ The database is SQLite and is stored in the file system for ease of use (MusiCha
 import `MusiChain.postman_collection.json` in Postman and add `rootCA.crt` in the settings. 
 
 
-# Contract Management
-1. Le fichier .sol dans /contracts est le squelette du fichier qu'on voit déployer. Il faut modifier le chemin pour zeppelin pour le chemin absolu sur votre machine.
-2. Ensuite run :
-   solcjs  --optimize --bin contracts/musiChain.sol -o build
-   solcjs  --optimize --abi contracts/musiChain.sol -o build
-   abigen --abi=build/contracts_musiChain_sol_MusiChain.abi --bin=build/contracts_musiChain_sol_MusiChain.bin --pkg=api --out=api/musiChain.go
-3. 3 fichiers devraient avoir été générés, 2 dans /build et 1 dans /api
-4. Il faut par la suite aller dans contractManager.go et la fonction DeployNewContract()
-5. Il faut lancer ganache
-6. Puis remplacer la private key par une clé privée de Ganache
-7. Puis run contrat_test.go
+# Smart Contracts
 
-1. Mêmes étapes pour le contrat des transactions (pas encore testé)
-solcjs  --optimize --abi contracts/tokenSale.sol -o build
-solcjs  --optimize --bin contracts/tokenSale.sol -o build
-abigen --abi=build/contracts_tokenSale_sol_TokenSale.abi --bin=build/contracts_tokenSale_sol_TokenSale.bin --pkg=tokenSale
---out=sale/tokenSale.go
+For now, I did not find a way to build the contracts with solc without errors.
+Here is a workflow that worked for me. 
 
+1. Compile base.sol on REMIX. Copy .abi in base.api and .bin in base.bin
+![img.png](img.png)
+
+2. Generate Go code to interact with the contract. It offers a wrapper to Deploy and other functionnality. 
+`abigen --bin=pkg/services/build/Base.bin --abi=pkg/services/build/Base.abi --pkg=base --out=pkg/services/abigen/base/baseContract.go`
+Note: since we need to specify a package and to make sure the generated code remains in isolation (same function names can happen), the generated code for the sale contract should be in pkg/services/abigen/sale.go 
+I think this command should be used...
+`abigen --bin=pkg/services/build/Sale.bin --abi=pkg/services/build/Sale.abi --pkg=sale --out=pkg/services/abigen/sale/saleContract.go`
+
+References:
+Command to build that did not work because of following error when deploying with the generated code from the build with solc:
+2023/07/02 20:51:39 VM Exception while processing transaction: invalid opcode package services
+
+`solc --bin --abi --overwrite  pkg/services/contracts/listing.sol -o pkg/services/build`
+
+# Ganache
+
+Note: only when we create a new workspace that we can set the gas limit. 
+![img_3.png](img_3.png)

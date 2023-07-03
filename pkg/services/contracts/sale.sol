@@ -1,16 +1,18 @@
 pragma solidity ^0.8.0;
 
-import "C:/Users/eliot/Desktop/MGL850/MusiChain/node_modules/@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+// Remove /node_modules when building on Remix.
+import "node_modules/@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "./base.sol";
 
-contract TokenSale {
-    IERC1155 public tokenContract;
+contract Sale {
+    Base public tokenContract;
     address payable public admin;
     uint256 public tokenPrice;
     uint256 public tokensSold;
 
     event Sell(address _buyer, uint256 _amount);
 
-    constructor(IERC1155 _tokenContract, uint256 _tokenPrice) {
+    constructor(Base _tokenContract, uint256 _tokenPrice) {
         admin = payable(msg.sender);
         tokenContract = _tokenContract;
         tokenPrice = _tokenPrice;
