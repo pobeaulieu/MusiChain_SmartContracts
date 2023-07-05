@@ -10,11 +10,12 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
 	"math/big"
+	"musichain/pkg/services/abigen/sale"
 
 	baseContractWrapper "musichain/pkg/services/abigen/Base"
 )
 
-const privateKey = "00756bd467db1d44d1c896101f9a292b075a337b0acbb94820f28fcca57d9d55"
+const privateKey = "567a218541559b46d9570da9cc75e48d195f7181ea231e85a22643e051f4f1c3"
 
 func deployNewBaseContract() {
 	// Connect to Ganache
@@ -65,14 +66,64 @@ func deployNewBaseContract() {
 	_ = instance
 }
 
-func mintToken(tokenID int64, amountt int64, contract_Address string) {
+func deployNewSaleContract(contract_Address string) {
+	// Connect to Ganache
+	client, err := ethclient.Dial("http://localhost:7545")
+	if err != nil {
+		log.Fatalf("Failed to connect to Ganache: %v", err)
+	}
+
+	// Read private key
+	privateKey, err := crypto.HexToECDSA(privateKey)
+	if err != nil {
+		log.Fatalf("Failed to parse private key: %v", err)
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("error casting public key to ECDSA")
+	}
+
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a new authorized transactor
+	auth := bind.NewKeyedTransactor(privateKey)
+
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)       // in wei
+	auth.GasLimit = uint64(30000000) // in units
+	auth.GasPrice = gasPrice
+
+	contract_Address_hex := common.HexToAddress(contract_Address)
+	address, tx, instance, err := sale.DeploySale(auth, client, contract_Address_hex)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(address.Hex())
+	fmt.Println(tx.Hash().Hex())
+
+	_ = instance
+}
+
+func mintToken(tokenID int64, amountt int64, minterAdress string) {
 	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
 	// The address of the ERC1155 contract deployed
-	contractAddress := common.HexToAddress(contract_Address)
+	contractAddress := common.HexToAddress(minterAdress)
 
 	// Load the contract (make sure to use your actual ABI)
 	contract, err := baseContractWrapper.NewBase(contractAddress, client)
@@ -86,7 +137,7 @@ func mintToken(tokenID int64, amountt int64, contract_Address string) {
 		log.Fatal(err)
 	}
 
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(1337)) // Ganache default chain ID
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(1337))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -138,105 +189,103 @@ func checkBalance(tokenID int64, contract_Address string, recipient_Address stri
 	fmt.Printf("Balance of token %d for address %s: %d\n", tokenId, recipientAddress.Hex(), balance)
 }
 
-//
-//func deployNewSaleContract(contract_Address string) {
-//	// Connect to Ganache
-//	client, err := ethclient.Dial("http://localhost:7545")
-//	if err != nil {
-//		log.Fatalf("Failed to connect to Ganache: %v", err)
-//	}
-//
-//	// Read private key
-//	privateKey, err := crypto.HexToECDSA(privateKey)
-//	if err != nil {
-//		log.Fatalf("Failed to parse private key: %v", err)
-//	}
-//
-//	auth := bind.NewKeyedTransactor(privateKey)
-//	auth.Value = big.NewInt(0)            // in wei
-//	auth.GasLimit = uint64(6721975)       // reduce this to a reasonable amount
-//	auth.GasPrice = big.NewInt(863252572) // 20 Gwei, as provided by Ganache
-//	// Read the contract bytecode
-//	bytecode, err := ioutil.ReadFile("build/contracts_tokenSale_sol_TokenSale.bin")
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	// Read and parse the ABI from file
-//	abiFile, err := ioutil.ReadFile("build/contracts_tokenSale_sol_TokenSale.abi")
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	var parsedABI abi.ABI
-//	if err := json.Unmarshal(abiFile, &parsedABI); err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	input := append([]byte(nil), bytecode...) // This could be contract constructor parameters, if necessary
-//
-//	tokenContractAddress := common.HexToAddress(contract_Address)
-//	tokenPrice := big.NewInt(10000000000000000) // Example token price
-//
-//	address, tx, _, err := bind.DeployContract(auth, parsedABI, input, client, tokenContractAddress, tokenPrice)
-//	if err != nil {
-//		log.Fatalf("Failed to deploy new token contract: %v", err)
-//	}
-//
-//	fmt.Printf("Contract deployed to address: %s\n", address.Hex())
-//	fmt.Printf("Transaction hash: %s\n", tx.Hash().Hex())
-//}
-//
-//func buyToken(tokenID int64, number int64) {
-//	client, err := ethclient.Dial("http://localhost:7545")
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	privateKey, err := crypto.HexToECDSA(privateKey)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	publicKey := privateKey.Public()
-//	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-//	if !ok {
-//		log.Fatal("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
-//	}
-//
-//	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
-//	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	gasPrice, err := client.SuggestGasPrice(context.Background())
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	auth := bind.NewKeyedTransactor(privateKey)
-//	auth.Nonce = big.NewInt(int64(nonce))
-//	auth.Value = big.NewInt(0)
-//	auth.GasLimit = uint64(300000)
-//	auth.GasPrice = gasPrice
-//
-//	// Token sale contract address
-//	tokenSaleAddress := common.HexToAddress("your-token-sale-contract-address")
-//	instance, err := sale.NewTokenSale(tokenSaleAddress, client)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	// Replace with your token ID, number of tokens and any necessary data
-//	tokenId := big.NewInt(tokenID)
-//	numberOfTokens := big.NewInt(number)
-//	data := []byte{} // Data can be empty or any necessary data according to your contract
-//
-//	tx, err := instance.BuyTokens(auth, tokenId, numberOfTokens, data)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	fmt.Printf("Purchased tokens: tx=%s\n", tx.Hash().Hex())
-//}
+func listTokenForSale(baseContractAdress string, marketplaceAddress string, tokenId, price, amount *big.Int) {
+	client, err := ethclient.Dial("http://localhost:7545")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	// Configure the transactor
+	privateKey, err := crypto.HexToECDSA(privateKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(1337))
+	if err != nil {
+		log.Fatalf("Failed to create authorized transactor: %v", err)
+	}
+
+	baseContractAdress_hex := common.HexToAddress(baseContractAdress)
+	baseContract, err := baseContractWrapper.NewBase(baseContractAdress_hex, client)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create a new instance of the marketplace contract
+	marketplaceAddress_hex := common.HexToAddress(marketplaceAddress)
+	_, err = baseContract.SetApprovalForAll(auth, marketplaceAddress_hex, true)
+	if err != nil {
+		log.Fatal(err)
+	}
+	marketplace, err := sale.NewSale(marketplaceAddress_hex, client)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// List a token for sale
+	_, err = marketplace.ListToken(auth, tokenId, price, amount)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%d token %s listed at price %d\n", amount, tokenId, price)
+}
+
+func checkTokenListed(marketplaceAddress string) {
+	client, err := ethclient.Dial("http://localhost:7545")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	// Create a new instance of the marketplace contract
+	marketplaceAddressHex := common.HexToAddress(marketplaceAddress)
+	marketplace, err := sale.NewSale(marketplaceAddressHex, client)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Call the getListings function
+	listings, err := marketplace.GetListings(nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Print out the listings
+	for i, listing := range listings {
+		fmt.Printf("Listing %d: seller = %s, tokenId = %d, price = %d, amount = %d\n",
+			i, listing.Seller.Hex(), listing.TokenId, listing.Price, listing.Amount)
+	}
+}
+
+func buyTokenFromListing(private_buyer_key string, marketplaceAddress string, listingId, price, amount *big.Int) {
+	client, err := ethclient.Dial("http://localhost:7545")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	// Configure the transactor
+	privateKey, err := crypto.HexToECDSA(private_buyer_key)
+	if err != nil {
+		log.Fatal(err)
+	}
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(1337))
+	if err != nil {
+		log.Fatalf("Failed to create authorized transactor: %v", err)
+	}
+
+	// Create a new instance of the marketplace contract
+	marketplaceAddress_hex := common.HexToAddress(marketplaceAddress)
+	marketplace, err := sale.NewSale(marketplaceAddress_hex, client)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Buy a token
+	auth.Value = price
+	_, err = marketplace.BuyToken(auth, listingId)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("%d token %d bought \n", amount, listingId)
+}
