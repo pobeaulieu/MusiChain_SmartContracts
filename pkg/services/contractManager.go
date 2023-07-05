@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
@@ -13,7 +14,7 @@ import (
 	baseContractWrapper "musichain/pkg/services/abigen/Base"
 )
 
-const privateKey = "45969cc4778b2388a90ec67e4d732688fd38d9831ea5dc99b0d3e97a5b92a62d"
+const privateKey = "00756bd467db1d44d1c896101f9a292b075a337b0acbb94820f28fcca57d9d55"
 
 func deployNewBaseContract() {
 	// Connect to Ganache
@@ -64,81 +65,79 @@ func deployNewBaseContract() {
 	_ = instance
 }
 
-//
-//func mintToken(tokenID int64, amountt int64, contract_Address string, recipientAddress string) {
-//	client, err := ethclient.Dial("http://localhost:7545")
-//	if err != nil {
-//		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-//	}
-//
-//	// The address of the ERC1155 contract deployed
-//	contractAddress := common.HexToAddress(contract_Address)
-//
-//	// Load the contract (make sure to use your actual ABI)
-//	contract, err := api.NewApi(contractAddress, client)
-//	if err != nil {
-//		log.Fatalf("Failed to load contract: %v", err)
-//	}
-//
-//	// Configure the transactor
-//	privateKey, err := crypto.HexToECDSA(privateKey)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(1337)) // Ganache default chain ID
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	// Set gas price and limit
-//	auth.GasLimit = uint64(3000000)
-//	auth.GasPrice = big.NewInt(20000000000)
-//
-//	// Parameters for the mint function
-//	recipient := common.HexToAddress(recipientAddress)
-//	tokenId := big.NewInt(tokenID)
-//	amount := big.NewInt(amountt)
-//	data := []byte{}
-//
-//	// Call the mint function
-//	tx, err := contract.Mint(auth, recipient, tokenId, amount, data)
-//	if err != nil {
-//		log.Fatalf("Failed to mint token: %v", err)
-//	}
-//
-//	fmt.Printf("Minted tokens! Transaction hash: %s\n", tx.Hash().Hex())
-//}
-//
-//func checkBalance(tokenID int64, contract_Address string, recipient_Address string) {
-//	// Connect to the Ethereum client
-//	client, err := ethclient.Dial("http://localhost:7545")
-//	if err != nil {
-//		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-//	}
-//
-//	// The address of the deployed contract
-//	contractAddress := common.HexToAddress(contract_Address)
-//
-//	// Create a new instance of the contract
-//	contract, err := api.NewApi(contractAddress, client)
-//	if err != nil {
-//		log.Fatalf("Failed to create a new instance of the contract: %v", err)
-//	}
-//
-//	// Specify the recipient's address and the token ID
-//	recipientAddress := common.HexToAddress(recipient_Address)
-//	tokenId := big.NewInt(tokenID) // specify the correct token ID
-//
-//	// Query the balance of the specific token for the recipient address
-//	balance, err := contract.BalanceOf(&bind.CallOpts{}, recipientAddress, tokenId)
-//	if err != nil {
-//		log.Fatalf("Failed to retrieve token balance: %v", err)
-//	}
-//
-//	// Log the balance
-//	fmt.Printf("Balance of token %d for address %s: %d\n", tokenId, recipientAddress.Hex(), balance)
-//}
+func mintToken(tokenID int64, amountt int64, contract_Address string) {
+	client, err := ethclient.Dial("http://localhost:7545")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	// The address of the ERC1155 contract deployed
+	contractAddress := common.HexToAddress(contract_Address)
+
+	// Load the contract (make sure to use your actual ABI)
+	contract, err := baseContractWrapper.NewBase(contractAddress, client)
+	if err != nil {
+		log.Fatalf("Failed to load contract: %v", err)
+	}
+
+	// Configure the transactor
+	privateKey, err := crypto.HexToECDSA(privateKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(1337)) // Ganache default chain ID
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Set gas price and limit
+	auth.GasLimit = uint64(3000000)
+	auth.GasPrice = big.NewInt(20000000000)
+
+	tokenId := big.NewInt(tokenID)
+	amount := big.NewInt(amountt)
+	data := []byte{}
+
+	// Call the mint function
+	tx, err := contract.Mint(auth, tokenId, amount, data)
+	if err != nil {
+		log.Fatalf("Failed to mint token: %v", err)
+	}
+
+	fmt.Printf("Minted tokens! Transaction hash: %s\n", tx.Hash().Hex())
+}
+
+func checkBalance(tokenID int64, contract_Address string, recipient_Address string) {
+	// Connect to the Ethereum client
+	client, err := ethclient.Dial("http://localhost:7545")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	// The address of the deployed contract
+	contractAddress := common.HexToAddress(contract_Address)
+
+	// Create a new instance of the contract
+	contract, err := baseContractWrapper.NewBase(contractAddress, client)
+	if err != nil {
+		log.Fatalf("Failed to create a new instance of the contract: %v", err)
+	}
+
+	// Specify the recipient's address and the token ID
+	recipientAddress := common.HexToAddress(recipient_Address)
+	tokenId := big.NewInt(tokenID) // specify the correct token ID
+
+	// Query the balance of the specific token for the recipient address
+	balance, err := contract.BalanceOf(&bind.CallOpts{}, recipientAddress, tokenId)
+	if err != nil {
+		log.Fatalf("Failed to retrieve token balance: %v", err)
+	}
+
+	// Log the balance
+	fmt.Printf("Balance of token %d for address %s: %d\n", tokenId, recipientAddress.Hex(), balance)
+}
+
 //
 //func deployNewSaleContract(contract_Address string) {
 //	// Connect to Ganache

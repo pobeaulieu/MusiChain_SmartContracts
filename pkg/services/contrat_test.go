@@ -2,14 +2,16 @@ package services
 
 import "testing"
 
-var contract_Address = "0x6A8f665801517aE124C606eB0D69315ACa06E732"
+var contract_Address = "0x6dc715370602Ef180Ee13b826225757e5F006e37"
 
-const recipientAddress = "0x8bf790E216E3efC7bD0a701599024b13A352c945\nBALANCE\n"
+const recipientAddress = "0xA55a12bcEd288BD428fF4E66e5c4EFF973D84ae2"
 
 func TestWeb3(t *testing.T) {
-	deployNewBaseContract()
-	//mintToken(1, 100, contract_Address, recipientAddress)
-	//checkBalance(1, contract_Address, recipientAddress)
+	//deployNewBaseContract()
+	mintToken(3, 10, contract_Address)
+	checkBalance(1, contract_Address, recipientAddress)
+	checkBalance(2, contract_Address, recipientAddress)
+	checkBalance(3, contract_Address, recipientAddress)
 	//deployNewSaleContract(contract_Address)
 	//buyToken(1, 10)
 	//checkBalance(1)
