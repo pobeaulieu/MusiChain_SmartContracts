@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"io/ioutil"
 	"math/rand"
 	"musichain/pkg/dao"
@@ -9,6 +8,8 @@ import (
 	"musichain/pkg/http/requests"
 	"musichain/pkg/http/response"
 	"strconv"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type TokenShare struct {
@@ -52,7 +53,7 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 func GetCreatedTokens(address string) ([]Token, error) {
 	// This is a mock for temporary development
 	tokenList := make([]Token, 3)
-	// TODO: Nico ajoute lappel au blockchain pour obtenir tous les tokens crees avec address en parametre
+	// getOwnedTokens(contract_base_Address, ownerAddress)
 	for i := uint(0); i < 3; i++ {
 
 		token := Token{

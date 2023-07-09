@@ -4,18 +4,19 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
 	"math/big"
 	"musichain/pkg/services/abigen/sale"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
+
 	baseContractWrapper "musichain/pkg/services/abigen/Base"
 )
 
-const privateKey = "567a218541559b46d9570da9cc75e48d195f7181ea231e85a22643e051f4f1c3"
+const privateKey = "6108940d2a7385f6e8ac6f6cff1a91e0bc2e8479b119e2d832f007ad6c58a10d"
 
 func deployNewBaseContract() {
 	// Connect to Ganache
@@ -51,8 +52,8 @@ func deployNewBaseContract() {
 	auth := bind.NewKeyedTransactor(privateKey)
 
 	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)       // in wei
-	auth.GasLimit = uint64(30000000) // in units
+	auth.Value = big.NewInt(0)      // in wei
+	auth.GasLimit = uint64(3000000) // in units
 	auth.GasPrice = gasPrice
 
 	address, tx, instance, err := baseContractWrapper.DeployBase(auth, client)
@@ -100,8 +101,8 @@ func deployNewSaleContract(contract_Address string) {
 	auth := bind.NewKeyedTransactor(privateKey)
 
 	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)       // in wei
-	auth.GasLimit = uint64(30000000) // in units
+	auth.Value = big.NewInt(0)      // in wei
+	auth.GasLimit = uint64(3000000) // in units
 	auth.GasPrice = gasPrice
 
 	contract_Address_hex := common.HexToAddress(contract_Address)
@@ -288,4 +289,62 @@ func buyTokenFromListing(private_buyer_key string, marketplaceAddress string, li
 	}
 
 	fmt.Printf("%d token %d bought \n", amount, listingId)
+}
+
+func getOwnerOfToken(tokenID int64, contract_Address string) {
+	// Connect to the Ethereum client
+	client, err := ethclient.Dial("http://localhost:7545")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	// The address of the deployed contract
+	contractAddress := common.HexToAddress(contract_Address)
+
+	// Create a new instance of the contract
+	contract, err := baseContractWrapper.NewBase(contractAddress, client)
+	if err != nil {
+		log.Fatalf("Failed to create a new instance of the contract: %v", err)
+	}
+
+	// Get the owner of the token
+	owner, err := contract.GetOwnerOfToken(&bind.CallOpts{}, big.NewInt(tokenID))
+	if err != nil {
+		log.Fatalf("Failed to retrieve the owner of the token: %v", err)
+	}
+
+	// Log the owner
+	fmt.Printf("Owner of token %d: %s\n", tokenID, owner.Hex())
+}
+
+func getOwnedTokens(contractAddress, ownerAddress string) {
+	// Connect to the Ethereum client
+	client, err := ethclient.Dial("http://localhost:7545")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	// The address of the deployed contract
+	contractAddr := common.HexToAddress(contractAddress)
+
+	// Create a new instance of the contract
+	contract, err := baseContractWrapper.NewBase(contractAddr, client)
+	if err != nil {
+		log.Fatalf("Failed to create a new instance of the contract: %v", err)
+	}
+
+	// The address of the owner
+	ownerAddr := common.HexToAddress(ownerAddress)
+
+	// Call the getOwnedTokens function in the contract
+	tokenIds, err := contract.GetOwnedTokens(nil, ownerAddr)
+	if err != nil {
+		log.Fatalf("Failed to retrieve the owned tokens: %v", err)
+	}
+
+	// Log the owned token IDs
+	fmt.Printf("Owned tokens for address %s:\n", ownerAddress)
+	for _, tokenId := range tokenIds {
+		fmt.Printf("- Token ID: %s\n", tokenId.String())
+	}
 }
