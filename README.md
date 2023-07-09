@@ -32,7 +32,7 @@ For now, I did not find a way to build the contracts with solc without errors.
 Here is a workflow that worked for me. 
 
 1. Compile base.sol on REMIX. Copy .abi in base.api and .bin in base.bin
-![img.png](img.png)
+![img.png](./img/img.png)
 
 2. Generate Go code to interact with the contract. It offers a wrapper to Deploy and other functionnality. 
 `abigen --bin=pkg/services/build/Base.bin --abi=pkg/services/build/Base.abi --pkg=base --out=pkg/services/abigen/base/baseContract.go`
@@ -46,30 +46,29 @@ Command to build that did not work because of following error when deploying wit
 
 `solc --bin --abi --overwrite  pkg/services/contracts/listing.sol -o pkg/services/build`
 
-# Ganache
-
-Note: only when we create a new workspace that we can set the gas limit. 
-![img_3.png](img_3.png)
-
-
 # Connect Metamask with Ganache
 1. Note your seed phrase of your Metamask Wallet somewhere. 
 2. Create a new Ganache Workspace and provide your wallet seed phrase
 
-![img_4.png](img_4.png)
+![img_4.png](./img/img_4.png)
 
 3. Start Ganache Network
 4. Add a new network in Metamask extension
 
-![img_5.png](img_5.png)
+![img_5.png](./img/img_5.png)
 
 5. Add network manually
 
-![img_6.png](img_6.png)
+![img_6.png](./img/img_6.png)
 
-![img_7.png](img_7.png)
+![img_7.png](./img/img_7.png)
 
 6. This should connect the first account to your wallet. 
-You can then import other accounts by coping the private key 
+You can then import other accounts by coping the private key without 0x
 
-![img_8.png](img_8.png)
+
+![img_8.png](./img/img_8.png)
+
+![img_9.png](./img/img_9.png)
+
+![img_10.png](./img/img_10.png)
