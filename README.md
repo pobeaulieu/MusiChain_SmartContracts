@@ -50,3 +50,26 @@ Command to build that did not work because of following error when deploying wit
 
 Note: only when we create a new workspace that we can set the gas limit. 
 ![img_3.png](img_3.png)
+
+
+# Connect Metamask with Ganache
+1. Note your seed phrase of your Metamask Wallet somewhere. 
+2. Create a new Ganache Workspace and provide your wallet seed phrase
+
+![img_4.png](img_4.png)
+
+3. Start Ganache Network
+4. Add a new network in Metamask extension
+
+![img_5.png](img_5.png)
+
+5. Add network manually
+
+![img_6.png](img_6.png)
+
+![img_7.png](img_7.png)
+
+6. This should connect the first account to your wallet. 
+You can then import other accounts by coping the private key 
+
+![img_8.png](img_8.png)
