@@ -99,12 +99,7 @@ func CreateTokens(c *fiber.Ctx) error {
 }
 
 func GetCreatedTokens(c *fiber.Ctx) error {
-	var request map[string]interface{}
-	if err := c.BodyParser(&request); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
-	}
-
-	creatorAddress, _ := request["creatorAddress"].(string)
+	creatorAddress := c.Query("creatorAddress")
 
 	tokenList, _ := services.GetCreatedTokens(creatorAddress)
 
@@ -114,12 +109,7 @@ func GetCreatedTokens(c *fiber.Ctx) error {
 }
 
 func GetMusicMedia(c *fiber.Ctx) error {
-	var request map[string]interface{}
-	if err := c.BodyParser(&request); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
-	}
-
-	id, _ := request["id"].(string)
+	id := c.Query("id")
 
 	musicMedia, err := services.GetMusicMedia(id)
 

@@ -52,19 +52,19 @@ func CreateTokens(request requests.CreateTokenRequest, musicMedia *domain.MusicM
 
 func GetCreatedTokens(address string) ([]Token, error) {
 	// This is a mock for temporary development
-	tokenList := make([]Token, 3)
-	// getOwnedTokens(contract_base_Address, ownerAddress)
-	for i := uint(0); i < 3; i++ {
+	tokenList := make([]Token, 2)
 
+	// getOwnedTokens(contract_base_Address, ownerAddress)
+	for i := 1; i < 3; i++ {
 		token := Token{
 			NumShares:        uint(rand.Int()),
 			Price:            float64(rand.Float64()),
 			Div:              float64(rand.Float64()),
 			InitialTktPool:   uint(rand.Int()),
 			RemainingTktPool: uint(rand.Int()),
-			MusicMediaId:     1,
+			MusicMediaId:     uint(i),
 		}
-		tokenList[i] = token
+		tokenList[i-1] = token
 	}
 
 	return tokenList, nil

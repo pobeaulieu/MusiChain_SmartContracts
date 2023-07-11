@@ -82,7 +82,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"creatorAddress\": \"0x39945E541AfFdDeb5E4b4BCFbdCfCdAC8eF21E6c\"\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -90,7 +90,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:8000/api/getcreatedtokens",
+					"raw": "https://localhost:8000/api/getcreatedtokens?creatorAddress=0x39945E541AfFdDeb5E4b4BCFbdCfCdAC8eF21E6c",
 					"protocol": "https",
 					"host": [
 						"localhost"
@@ -99,6 +99,12 @@
 					"path": [
 						"api",
 						"getcreatedtokens"
+					],
+					"query": [
+						{
+							"key": "creatorAddress",
+							"value": "0x39945E541AfFdDeb5E4b4BCFbdCfCdAC8eF21E6c"
+						}
 					]
 				}
 			},
