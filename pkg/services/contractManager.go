@@ -4,9 +4,12 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/big"
 	"musichain/pkg/services/abigen/sale"
+	"os"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -16,9 +19,7 @@ import (
 	baseContractWrapper "musichain/pkg/services/abigen/Base"
 )
 
-const privateKey = "6108940d2a7385f6e8ac6f6cff1a91e0bc2e8479b119e2d832f007ad6c58a10d"
-
-func deployNewBaseContract() {
+func deployNewBaseContract(privateKeyString string) {
 	// Connect to Ganache
 	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
@@ -26,7 +27,7 @@ func deployNewBaseContract() {
 	}
 
 	// Read private key
-	privateKey, err := crypto.HexToECDSA(privateKey)
+	privateKey, err := crypto.HexToECDSA(privateKeyString)
 	if err != nil {
 		log.Fatalf("Failed to parse private key: %v", err)
 	}
@@ -61,13 +62,27 @@ func deployNewBaseContract() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(address.Hex())
+	addressHex := address.Hex()
+
+	fmt.Println(addressHex)
 	fmt.Println(tx.Hash().Hex())
+
+	f, err := os.Create("base_address.txt")
+	if err != nil {
+		log.Fatalf("Failed to open file: %v", err)
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(addressHex + "\n")
+	if err != nil {
+		log.Fatalf("Failed to write to file: %v", err)
+	}
+	f.Sync()
 
 	_ = instance
 }
 
-func deployNewSaleContract(contract_Address string) {
+func deployNewSaleContract(privateKeyString string, contract_Address string) {
 	// Connect to Ganache
 	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
@@ -75,7 +90,7 @@ func deployNewSaleContract(contract_Address string) {
 	}
 
 	// Read private key
-	privateKey, err := crypto.HexToECDSA(privateKey)
+	privateKey, err := crypto.HexToECDSA(privateKeyString)
 	if err != nil {
 		log.Fatalf("Failed to parse private key: %v", err)
 	}
@@ -111,13 +126,27 @@ func deployNewSaleContract(contract_Address string) {
 		log.Fatal(err)
 	}
 
-	fmt.Println(address.Hex())
+	addressHex := address.Hex()
+
+	fmt.Println(addressHex)
 	fmt.Println(tx.Hash().Hex())
+
+	f, err := os.Create("sale_address.txt")
+	if err != nil {
+		log.Fatalf("Failed to open file: %v", err)
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(addressHex + "\n")
+	if err != nil {
+		log.Fatalf("Failed to write to file: %v", err)
+	}
+	f.Sync()
 
 	_ = instance
 }
 
-func mintToken(tokenID int64, amountt int64, minterAdress string) {
+func mintToken(privateKeyString string, tokenID int64, amountt int64, minterAdress string) {
 	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
@@ -133,7 +162,7 @@ func mintToken(tokenID int64, amountt int64, minterAdress string) {
 	}
 
 	// Configure the transactor
-	privateKey, err := crypto.HexToECDSA(privateKey)
+	privateKey, err := crypto.HexToECDSA(privateKeyString)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -190,14 +219,14 @@ func checkBalance(tokenID int64, contract_Address string, recipient_Address stri
 	fmt.Printf("Balance of token %d for address %s: %d\n", tokenId, recipientAddress.Hex(), balance)
 }
 
-func listTokenForSale(baseContractAdress string, marketplaceAddress string, tokenId, price, amount *big.Int) {
+func listTokenForSale(privateKeyString string, baseContractAdress string, marketplaceAddress string, tokenId, price, amount *big.Int) {
 	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
 	// Configure the transactor
-	privateKey, err := crypto.HexToECDSA(privateKey)
+	privateKey, err := crypto.HexToECDSA(privateKeyString)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -347,4 +376,22 @@ func getOwnedTokens(contractAddress, ownerAddress string) {
 	for _, tokenId := range tokenIds {
 		fmt.Printf("- Token ID: %s\n", tokenId.String())
 	}
+}
+
+func getContractBaseAddress() string {
+	bytes, err := ioutil.ReadFile("base_address.txt")
+	if err != nil {
+		log.Fatalf("Failed to read file: %v", err)
+	}
+
+	return strings.TrimSpace(string(bytes))
+}
+
+func getContractSaleAddress() string {
+	bytes, err := ioutil.ReadFile("sale_address.txt")
+	if err != nil {
+		log.Fatalf("Failed to read file: %v", err)
+	}
+
+	return strings.TrimSpace(string(bytes))
 }
