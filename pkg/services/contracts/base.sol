@@ -6,17 +6,21 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 contract Base is ERC1155 {
     mapping(uint256 => address[]) private tokenOwners;
     mapping(address => uint256[]) private ownedTokens;
+    mapping(uint256 => string) private tokenNames;  // added this line
+    uint256 private _currentTokenId = 0;
 
     constructor() ERC1155("https://musichain.com/api/token/{id}.json") {}
 
-    function mint(uint256 tokenId, uint256 amount, bytes memory data) public {
-        _mint(msg.sender, tokenId, amount, data);
-        tokenOwners[tokenId].push(msg.sender);
-        
+    function mint(string memory tokenName, uint256 amount, bytes memory data) public {
+        uint256 newTokenId = _currentTokenId++;
+        _mint(msg.sender, newTokenId, amount, data);
+        tokenNames[newTokenId] = tokenName;  // added this line
+        tokenOwners[newTokenId].push(msg.sender);
+
         if (ownedTokens[msg.sender].length == 0) {
             ownedTokens[msg.sender] = new uint256[](1);
         }
-        ownedTokens[msg.sender].push(tokenId);
+        ownedTokens[msg.sender].push(newTokenId);
     }
 
     function balanceOfToken(uint256 tokenId) public view returns (uint256) {
@@ -42,5 +46,9 @@ contract Base is ERC1155 {
 
     function getOwnedTokens(address owner) public view returns (uint256[] memory) {
         return ownedTokens[owner];
+    }
+
+    function getTokenName(uint256 tokenId) public view returns (string memory) {  // added this function
+        return tokenNames[tokenId];
     }
 }

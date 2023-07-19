@@ -176,12 +176,11 @@ func mintToken(privateKeyString string, tokenID int64, amountt int64, minterAdre
 	auth.GasLimit = uint64(3000000)
 	auth.GasPrice = big.NewInt(20000000000)
 
-	tokenId := big.NewInt(tokenID)
 	amount := big.NewInt(amountt)
 	data := []byte{}
 
 	// Call the mint function
-	tx, err := contract.Mint(auth, tokenId, amount, data)
+	tx, err := contract.Mint(auth, "exemple", amount, data)
 	if err != nil {
 		log.Fatalf("Failed to mint token: %v", err)
 	}

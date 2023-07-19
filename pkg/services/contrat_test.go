@@ -4,10 +4,11 @@ import (
 	"testing"
 )
 
-const privateKey = "383ac5298026b523038e452fc357a3e99341aceb59f9b260b5af2193a36fb8fc"
+const privateKey = "b99c698c20208c507ea8dfa650dd2cd13a0275a1e7bea00aaf579ca5d764fb49"
 
 var contract_base_Address = getContractBaseAddress()
-var contract_sale_Address = getContractSaleAddress()
+
+//var contract_sale_Address = getContractSaleAddress()
 
 var ownerAddress = "0x03e1ad05936c71c4DBeAa9b4da89000169703AB5"
 
@@ -18,7 +19,7 @@ var buyer_adress = "0xaB2A69Cfa03A27Aea2D99E2FB79E0d7351F0103c"
 
 func TestWeb3(t *testing.T) {
 	//deployNewBaseContract(privateKey)
-	//deployNewSaleContract(privateKey, contract_base_Address)
+	deployNewSaleContract(privateKey, contract_base_Address)
 	//mintToken(privateKey, 1, 10, contract_base_Address)
 	//getOwnerOfToken(55, contract_base_Address)
 	//getOwnedTokens(contract_base_Address, ownerAddress)
