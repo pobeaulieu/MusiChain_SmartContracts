@@ -9,6 +9,8 @@ contract Base is ERC1155 {
     mapping(uint256 => string) private tokenNames;  // added this line
     uint256 private _currentTokenId = 0;
 
+    event Mint(address indexed from, uint256 tokenId);
+
     constructor() ERC1155("https://musichain.com/api/token/{id}.json") {}
 
     function mint(string memory tokenName, uint256 amount, bytes memory data) public {
@@ -18,9 +20,11 @@ contract Base is ERC1155 {
         tokenOwners[newTokenId].push(msg.sender);
 
         if (ownedTokens[msg.sender].length == 0) {
-            ownedTokens[msg.sender] = new uint256[](1);
+            ownedTokens[msg.sender].push(newTokenId);
+        } else {
+            ownedTokens[msg.sender].push(newTokenId);
         }
-        ownedTokens[msg.sender].push(newTokenId);
+        emit Mint(msg.sender, newTokenId);
     }
 
     function balanceOfToken(uint256 tokenId) public view returns (uint256) {
