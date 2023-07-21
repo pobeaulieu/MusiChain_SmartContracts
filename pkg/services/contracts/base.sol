@@ -6,8 +6,9 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 contract Base is ERC1155 {
     mapping(uint256 => address[]) private tokenOwners;
     mapping(address => uint256[]) private ownedTokens;
-    mapping(uint256 => string) private tokenNames;  // added this line
+    mapping(uint256 => string) public tokenNames;  // change to public
     uint256 private _currentTokenId = 0;
+    mapping(uint256 => address) public originalCreators;  // change to public
 
     event Mint(address indexed from, uint256 tokenId);
 
@@ -16,14 +17,10 @@ contract Base is ERC1155 {
     function mint(string memory tokenName, uint256 amount, bytes memory data) public {
         uint256 newTokenId = _currentTokenId++;
         _mint(msg.sender, newTokenId, amount, data);
-        tokenNames[newTokenId] = tokenName;  // added this line
+        tokenNames[newTokenId] = tokenName;
         tokenOwners[newTokenId].push(msg.sender);
-
-        if (ownedTokens[msg.sender].length == 0) {
-            ownedTokens[msg.sender].push(newTokenId);
-        } else {
-            ownedTokens[msg.sender].push(newTokenId);
-        }
+        originalCreators[newTokenId] = msg.sender;
+        ownedTokens[msg.sender].push(newTokenId);
         emit Mint(msg.sender, newTokenId);
     }
 
@@ -50,9 +47,5 @@ contract Base is ERC1155 {
 
     function getOwnedTokens(address owner) public view returns (uint256[] memory) {
         return ownedTokens[owner];
-    }
-
-    function getTokenName(uint256 tokenId) public view returns (string memory) {  // added this function
-        return tokenNames[tokenId];
     }
 }
