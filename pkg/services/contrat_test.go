@@ -10,7 +10,7 @@ var contract_base_Address = getContractBaseAddress()
 
 //var contract_sale_Address = getContractSaleAddress()
 
-var ownerAddress = "0x03e1ad05936c71c4DBeAa9b4da89000169703AB5"
+//var ownerAddress = "0x03e1ad05936c71c4DBeAa9b4da89000169703AB5"
 
 const minterAdress = "0x03e1ad05936c71c4DBeAa9b4da89000169703AB5"
 

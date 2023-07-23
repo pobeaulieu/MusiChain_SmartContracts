@@ -345,37 +345,37 @@ func getOwnerOfToken(tokenID int64, contract_Address string) {
 	fmt.Printf("Owner of token %d: %s\n", tokenID, owner.Hex())
 }
 
-func getOwnedTokens(contractAddress, ownerAddress string) {
-	// Connect to the Ethereum client
-	client, err := ethclient.Dial("http://localhost:7545")
-	if err != nil {
-		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-	}
-
-	// The address of the deployed contract
-	contractAddr := common.HexToAddress(contractAddress)
-
-	// Create a new instance of the contract
-	contract, err := baseContractWrapper.NewBase(contractAddr, client)
-	if err != nil {
-		log.Fatalf("Failed to create a new instance of the contract: %v", err)
-	}
-
-	// The address of the owner
-	ownerAddr := common.HexToAddress(ownerAddress)
-
-	// Call the getOwnedTokens function in the contract
-	tokenIds, err := contract.GetOwnedTokens(nil, ownerAddr)
-	if err != nil {
-		log.Fatalf("Failed to retrieve the owned tokens: %v", err)
-	}
-
-	// Log the owned token IDs
-	fmt.Printf("Owned tokens for address %s:\n", ownerAddress)
-	for _, tokenId := range tokenIds {
-		fmt.Printf("- Token ID: %s\n", tokenId.String())
-	}
-}
+//func getOwnedTokens(contractAddress, ownerAddress string) {
+//	// Connect to the Ethereum client
+//	client, err := ethclient.Dial("http://localhost:7545")
+//	if err != nil {
+//		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+//	}
+//
+//	// The address of the deployed contract
+//	contractAddr := common.HexToAddress(contractAddress)
+//
+//	// Create a new instance of the contract
+//	contract, err := baseContractWrapper.NewBase(contractAddr, client)
+//	if err != nil {
+//		log.Fatalf("Failed to create a new instance of the contract: %v", err)
+//	}
+//
+//	// The address of the owner
+//	ownerAddr := common.HexToAddress(ownerAddress)
+//
+//	// Call the getOwnedTokens function in the contract
+//	tokenIds, err := contract.GetOwnedTokens(nil, ownerAddr)
+//	if err != nil {
+//		log.Fatalf("Failed to retrieve the owned tokens: %v", err)
+//	}
+//
+//	// Log the owned token IDs
+//	fmt.Printf("Owned tokens for address %s:\n", ownerAddress)
+//	for _, tokenId := range tokenIds {
+//		fmt.Printf("- Token ID: %s\n", tokenId.String())
+//	}
+//}
 
 func getContractBaseAddress() string {
 	bytes, err := ioutil.ReadFile("base_address.txt")
