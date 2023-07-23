@@ -31,6 +31,26 @@ contract Sale {
         return listings;
     }
 
+    function getListingsByUser(address user) public view returns (Listing[] memory) {
+        uint count = 0;
+        for (uint i = 0; i < listings.length; i++) {
+            if (listings[i].seller == user) {
+                count++;
+            }
+        }
+
+        Listing[] memory userlistings = new Listing[](count);
+        uint index = 0;
+        for (uint i = 0; i < listings.length; i++) {
+            if (listings[i].seller == user) {
+                userlistings[index] = listings[i];
+                index++;
+            }
+        }
+
+        return userlistings;
+    }
+
     function buyToken(uint256 listingId) public payable {
         require(listingId < listings.length, "Invalid listing ID");
 
