@@ -180,7 +180,7 @@ func mintToken(privateKeyString string, tokenID int64, amountt int64, minterAdre
 	data := []byte{}
 
 	// Call the mint function
-	tx, err := contract.Mint(auth, "exemple", amount, data)
+	tx, err := contract.Mint(auth, "exemple", amount, "", data)
 	if err != nil {
 		log.Fatalf("Failed to mint token: %v", err)
 	}

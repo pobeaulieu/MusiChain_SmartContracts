@@ -6,18 +6,20 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 contract Base is ERC1155 {
     mapping(uint256 => address[]) private tokenOwners;
     mapping(address => uint256[]) private ownedTokens;
-    mapping(uint256 => string) public tokenNames;  // change to public
+    mapping(uint256 => string) public tokenNames;
     uint256 private _currentTokenId = 0;
-    mapping(uint256 => address) public originalCreators;  // change to public
+    mapping(uint256 => address) public originalCreators;
+    mapping(uint256 => string) public ipfsPaths;
 
     event Mint(address indexed from, uint256 tokenId);
 
     constructor() ERC1155("https://musichain.com/api/token/{id}.json") {}
 
-    function mint(string memory tokenName, uint256 amount, bytes memory data) public {
+    function mint(string memory tokenName, uint256 amount, string memory ipfsPath, bytes memory data) public {
         uint256 newTokenId = _currentTokenId++;
         _mint(msg.sender, newTokenId, amount, data);
         tokenNames[newTokenId] = tokenName;
+        ipfsPaths[newTokenId] = ipfsPath;
         tokenOwners[newTokenId].push(msg.sender);
         originalCreators[newTokenId] = msg.sender;
         ownedTokens[msg.sender].push(newTokenId);
@@ -39,10 +41,6 @@ contract Base is ERC1155 {
         } else {
             revert("Token does not exist");
         }
-    }
-
-    function getAllTokenOwners(uint256 tokenId) public view returns (address[] memory) {
-        return tokenOwners[tokenId];
     }
 
     function getOwnedTokens(address owner) public view returns (uint256[] memory) {
