@@ -260,31 +260,31 @@ func listTokenForSale(privateKeyString string, baseContractAdress string, market
 	fmt.Printf("%d token %s listed at price %d\n", amount, tokenId, price)
 }
 
-func checkTokenListed(marketplaceAddress string) {
-	client, err := ethclient.Dial("http://localhost:7545")
-	if err != nil {
-		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-	}
-
-	// Create a new instance of the marketplace contract
-	marketplaceAddressHex := common.HexToAddress(marketplaceAddress)
-	marketplace, err := sale.NewSale(marketplaceAddressHex, client)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Call the getListings function
-	listings, err := marketplace.GetListings(nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Print out the listings
-	for i, listing := range listings {
-		fmt.Printf("Listing %d: seller = %s, tokenId = %d, price = %d, amount = %d\n",
-			i, listing.Seller.Hex(), listing.TokenId, listing.Price, listing.Amount)
-	}
-}
+//func checkTokenListed(marketplaceAddress string) {
+//	client, err := ethclient.Dial("http://localhost:7545")
+//	if err != nil {
+//		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+//	}
+//
+//	// Create a new instance of the marketplace contract
+//	marketplaceAddressHex := common.HexToAddress(marketplaceAddress)
+//	marketplace, err := sale.NewSale(marketplaceAddressHex, client)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	// Call the getListings function
+//	listings, err := marketplace.GetListings(nil)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	// Print out the listings
+//	for i, listing := range listings {
+//		fmt.Printf("Listing %d: seller = %s, tokenId = %d, price = %d, amount = %d\n",
+//			i, listing.Seller.Hex(), listing.TokenId, listing.Price, listing.Amount)
+//	}
+//}
 
 func buyTokenFromListing(private_buyer_key string, marketplaceAddress string, listingId, price, amount *big.Int) {
 	client, err := ethclient.Dial("http://localhost:7545")
