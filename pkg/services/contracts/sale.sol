@@ -42,18 +42,23 @@ contract Sale {
         tokenIds.push(tokenId);
     }
 
-    function buyToken(uint256 tokenId) public payable {
+    function buyToken(uint256 tokenId, uint256 buyAmount) public payable {
         require(listings[tokenId].isForSale, "This item is not for sale");
         Listing memory listing = listings[tokenId];
-        require(msg.value >= listing.price, "Sent value is less than the listing price");
-        require(tokenContract.balanceOf(listing.seller, listing.tokenId) >= listing.amount, "Seller does not have enough tokens for sale");
+        uint256 totalCost = listing.price * buyAmount;
+        require(msg.value >= totalCost, "Sent value is less than the total cost");
+        require(tokenContract.balanceOf(listing.seller, listing.tokenId) >= buyAmount, "Seller does not have enough tokens for sale");
 
-        tokenContract.safeTransferFrom(listing.seller, msg.sender, listing.tokenId, listing.amount, "");
+        tokenContract.safeTransferFrom(listing.seller, msg.sender, listing.tokenId, buyAmount, "");
 
-        (bool success, ) = payable(listing.seller).call{value: msg.value}("");
+        (bool success, ) = payable(listing.seller).call{value: totalCost}("");
         require(success, "Failed to transfer Ether to the seller");
 
-        listings[tokenId].isForSale = false;
+        listings[tokenId].amount -= buyAmount;
+
+        if(listings[tokenId].amount == 0) {
+            listings[tokenId].isForSale = false;
+        }
     }
 
     function getAllListings() public view returns (Listing[] memory) {
