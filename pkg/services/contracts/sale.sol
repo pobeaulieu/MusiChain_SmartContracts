@@ -20,20 +20,40 @@ contract Sale {
         tokenContract = _tokenContract;
     }
 
-    function listToken(uint256 tokenId, uint256 price, uint256 amount) public {
+    function convertToWei(uint256 etherValue) public pure returns(uint256) {
+        return etherValue * 10**18;
+    }
+
+    function listToken(uint256 tokenId, uint256 priceInEther, uint256 amount) public {
         require(tokenId > 0, "Token ID should be greater than zero");
-        require(price > 0, "Price should be greater than zero");
+        require(priceInEther > 0, "Price should be greater than zero");
         require(amount > 0, "Amount should be greater than zero");
 
+        uint256 priceInWei = convertToWei(priceInEther);
+
         listings[tokenId] = Listing({
-            tokenId: tokenId, // Add tokenId when creating a new Listing
+            tokenId: tokenId,
             seller: msg.sender,
-            price: price,
+            price: priceInWei,
             amount: amount,
             isForSale: true
         });
 
         tokenIds.push(tokenId);
+    }
+
+    function buyToken(uint256 tokenId) public payable {
+        require(listings[tokenId].isForSale, "This item is not for sale");
+        Listing memory listing = listings[tokenId];
+        require(msg.value >= listing.price, "Sent value is less than the listing price");
+        require(tokenContract.balanceOf(listing.seller, listing.tokenId) >= listing.amount, "Seller does not have enough tokens for sale");
+
+        tokenContract.safeTransferFrom(listing.seller, msg.sender, listing.tokenId, listing.amount, "");
+
+        (bool success, ) = payable(listing.seller).call{value: msg.value}("");
+        require(success, "Failed to transfer Ether to the seller");
+
+        listings[tokenId].isForSale = false;
     }
 
     function getAllListings() public view returns (Listing[] memory) {
@@ -61,20 +81,6 @@ contract Sale {
         listings[tokenId].isForSale = false;
     }
 
-    function buyToken(uint256 tokenId) public payable {
-        require(listings[tokenId].isForSale, "This item is not for sale");
-        Listing memory listing = listings[tokenId];
-        require(msg.value >= listing.price, "Sent value is less than the listing price");
-        require(tokenContract.balanceOf(listing.seller, listing.tokenId) >= listing.amount, "Seller does not have enough tokens for sale");
-
-        tokenContract.safeTransferFrom(listing.seller, msg.sender, listing.tokenId, listing.amount, "");
-
-        (bool success, ) = payable(listing.seller).call{value: msg.value}("");
-        require(success, "Failed to transfer Ether to the seller");
-
-        listings[tokenId].isForSale = false;
-    }
-
     function getListingsByUser(address user) public view returns (Listing[] memory) {
         uint count = 0;
         for (uint i = 0; i < tokenIds.length; i++) {
@@ -93,5 +99,25 @@ contract Sale {
         }
 
         return userlistings;
+    }
+
+    function getOwnedTokens(address owner) public view returns (uint256[] memory) {
+        uint256 count = 0;
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            if (tokenContract.balanceOf(owner, tokenIds[i]) > 0) {
+                count++;
+            }
+        }
+
+        uint256[] memory ownerTokens = new uint256[](count);
+        uint256 index = 0;
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            if (tokenContract.balanceOf(owner, tokenIds[i]) > 0) {
+                ownerTokens[index] = tokenIds[i];
+                index++;
+            }
+        }
+
+        return ownerTokens;
     }
 }

@@ -43,4 +43,8 @@ contract Base is ERC1155 {
     function getTokensCreatedBy(address owner) public view returns (uint256[] memory) {
         return tokensCreatedBy[owner];
     }
+
+    function getTokenBalance(address account, uint256 tokenId) public view returns (uint256) {
+        return balanceOf(account, tokenId);
+    }
 }
