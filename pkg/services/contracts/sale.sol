@@ -20,16 +20,10 @@ contract Sale {
         tokenContract = _tokenContract;
     }
 
-    function convertToWei(uint256 etherValue) public pure returns(uint256) {
-        return etherValue * 10**18;
-    }
-
-    function listToken(uint256 tokenId, uint256 priceInEther, uint256 amount) public {
+    function listToken(uint256 tokenId, uint256 priceInWei, uint256 amount) public {
         require(tokenId > 0, "Token ID should be greater than zero");
-        require(priceInEther > 0, "Price should be greater than zero");
+        require(priceInWei > 0, "Price should be greater than zero");
         require(amount > 0, "Amount should be greater than zero");
-
-        uint256 priceInWei = convertToWei(priceInEther);
 
         listings[tokenId] = Listing({
             tokenId: tokenId,
