@@ -211,47 +211,47 @@ func deployNewSaleContract(privateKeyString string, contract_Address string) {
 	_ = instance
 }
 
-func mintToken(privateKeyString string, tokenID int64, amountt int64, minterAdress string) {
-	client, err := ethclient.Dial("http://localhost:7545")
-	if err != nil {
-		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-	}
-
-	// The address of the ERC1155 contract deployed
-	contractAddress := common.HexToAddress(minterAdress)
-
-	// Load the contract (make sure to use your actual ABI)
-	contract, err := baseContractWrapper.NewBase(contractAddress, client)
-	if err != nil {
-		log.Fatalf("Failed to load contract: %v", err)
-	}
-
-	// Configure the transactor
-	privateKey, err := crypto.HexToECDSA(privateKeyString)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(1337))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Set gas price and limit
-	auth.GasLimit = uint64(3000000)
-	auth.GasPrice = big.NewInt(20000000000)
-
-	amount := big.NewInt(amountt)
-	data := []byte{}
-
-	// Call the mint function
-	tx, err := contract.Mint(auth, "exemple", amount, "", data)
-	if err != nil {
-		log.Fatalf("Failed to mint token: %v", err)
-	}
-
-	fmt.Printf("Minted tokens! Transaction hash: %s\n", tx.Hash().Hex())
-}
+//func mintToken(privateKeyString string, tokenID int64, amountt int64, minterAdress string) {
+//	client, err := ethclient.Dial("http://localhost:7545")
+//	if err != nil {
+//		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+//	}
+//
+//	// The address of the ERC1155 contract deployed
+//	contractAddress := common.HexToAddress(minterAdress)
+//
+//	// Load the contract (make sure to use your actual ABI)
+//	contract, err := baseContractWrapper.NewBase(contractAddress, client)
+//	if err != nil {
+//		log.Fatalf("Failed to load contract: %v", err)
+//	}
+//
+//	// Configure the transactor
+//	privateKey, err := crypto.HexToECDSA(privateKeyString)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(1337))
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	// Set gas price and limit
+//	auth.GasLimit = uint64(3000000)
+//	auth.GasPrice = big.NewInt(20000000000)
+//
+//	amount := big.NewInt(amountt)
+//	data := []byte{}
+//
+//	// Call the mint function
+//	tx, err := contract.Mint(auth, "exemple", amount, "", data)
+//	if err != nil {
+//		log.Fatalf("Failed to mint token: %v", err)
+//	}
+//
+//	fmt.Printf("Minted tokens! Transaction hash: %s\n", tx.Hash().Hex())
+//}
 
 func checkBalance(tokenID int64, contract_Address string, recipient_Address string) {
 	// Connect to the Ethereum client

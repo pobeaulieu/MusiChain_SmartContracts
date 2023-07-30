@@ -6,10 +6,6 @@ import (
 
 const privateKey = "44dfab8d648dc9bb6099097366821ebdc1b9364754ab313098aeb666257e901c"
 
-var contract_base_Address = getContractBaseAddress()
-
-//var contract_metaData_Address = getContractMetaDataAddress()
-
 //var contract_sale_Address = getContractSaleAddress()
 
 //var ownerAddress = "0x03e1ad05936c71c4DBeAa9b4da89000169703AB5"
@@ -21,7 +17,9 @@ var buyer_adress = "0xaB2A69Cfa03A27Aea2D99E2FB79E0d7351F0103c"
 
 func TestWeb3(t *testing.T) {
 	//deployNewMetaDataContract(privateKey)
+	//var contract_metaData_Address = getContractMetaDataAddress()
 	//deployNewBaseContract(privateKey, contract_metaData_Address)
+	var contract_base_Address = getContractBaseAddress()
 	deployNewSaleContract(privateKey, contract_base_Address)
 	//mintToken(privateKey, 1, 10, contract_base_Address)
 	//getOwnerOfToken(55, contract_base_Address)

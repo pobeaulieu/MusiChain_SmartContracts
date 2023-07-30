@@ -17,10 +17,10 @@ contract Base is ERC1155 {
         metadata = _metadata;
     }
 
-    function mint(string memory tokenName, uint256 amount, string memory ipfsPath, bytes memory data) public {
+    function mint(string memory tokenName, uint256 amount, string memory ipfsPath, uint256 ticketPool, uint256 div, bytes memory data) public {
         uint256 newTokenId = _currentTokenId++;
         _mint(msg.sender, newTokenId, amount, data);
-        metadata.setMetadata(newTokenId, tokenName, ipfsPath);
+        metadata.setMetadata(newTokenId, tokenName, ipfsPath, ticketPool, div);
         tokenOwners[newTokenId].push(msg.sender);
         originalCreators[newTokenId] = msg.sender;
         ownedTokens[msg.sender].push(newTokenId);
