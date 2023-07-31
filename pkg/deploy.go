@@ -12,9 +12,31 @@ import (
 	"math/big"
 	metaWrapper "musichain/pkg/abigen/metadata"
 	"musichain/pkg/abigen/sale"
+	"os"
 
 	baseContractWrapper "musichain/pkg/abigen/Base"
 )
+
+func Deploy(privateKey string) {
+	metaAddress := deployNewMetaDataContract(privateKey)
+	baseAddress := deployNewBaseContract(privateKey, metaAddress)
+	saleAddress := deployNewSaleContract(privateKey, baseAddress)
+
+	f, err := os.Create(".env")
+	if err != nil {
+		log.Fatalf("Failed to open file: %v", err)
+	}
+	defer f.Close()
+
+	_, err = f.WriteString("REACT_APP_METADATA_ADDRESS = " + metaAddress + "\n")
+	_, err = f.WriteString("REACT_APP_BASE_ADDRESS = " + baseAddress + "\n")
+	_, err = f.WriteString("REACT_APP_SALE_ADDRESS = " + saleAddress + "\n")
+
+	if err != nil {
+		log.Fatalf("Failed to write to file: %v", err)
+	}
+	f.Sync()
+}
 
 func deployNewMetaDataContract(privateKeyString string) string {
 	// Connect to Ganache
