@@ -4,7 +4,7 @@ import (
 	"musichain/pkg"
 )
 
-const privateKey = "bab108fa9ea5eb0a23204e2827a8ca011b6c4ae864e1621e0e634fe2a13ba640"
+const privateKey = "9e2f3158a45ce798cb7342a3f6c8e5dafd926347c039b3596b4975aabb22347e"
 
 func main() {
 	pkg.Deploy(privateKey)
