@@ -13,12 +13,10 @@ contract Sale {
         bool isForSale;
     }
 
+    uint256 public currentListingId=1;
     IERC1155 public tokenContract;
-    uint256 public listingCount;
+    uint256[] public listingIds;
     mapping(uint256 => Listing) public listings;
-    mapping(uint256 => uint256[]) public tokenToListings;
-    mapping (address => uint256[]) public ownedTokens;
-    mapping (address => mapping(uint256 => bool)) public hasToken;
 
     constructor(IERC1155 _tokenContract) {
         tokenContract = _tokenContract;
@@ -28,14 +26,9 @@ contract Sale {
         require(tokenId > 0, "Token ID should be greater than zero");
         require(priceInWei > 0, "Price should be greater than zero");
         require(amount > 0, "Amount should be greater than zero");
-
-        if (!hasToken[msg.sender][tokenId]) {
-            ownedTokens[msg.sender].push(tokenId);
-            hasToken[msg.sender][tokenId] = true;
-        }
-
-        listings[listingCount] = Listing({
-            listingId: listingCount,
+        uint256 newListingId = currentListingId++;
+        listings[newListingId] = Listing({
+            listingId : newListingId,
             tokenId: tokenId,
             seller: msg.sender,
             price: priceInWei,
@@ -43,8 +36,8 @@ contract Sale {
             isForSale: true
         });
 
-        tokenToListings[tokenId].push(listingCount);
-        listingCount++;
+        listingIds.push(newListingId);
+
     }
 
     function buyToken(uint256 listingId, uint256 buyAmount) public payable {
@@ -61,20 +54,28 @@ contract Sale {
 
         listings[listingId].amount -= buyAmount;
 
-        ownedTokens[msg.sender].push(listing.tokenId);
-
         if(listings[listingId].amount == 0) {
             listings[listingId].isForSale = false;
         }
     }
 
     function getAllListings() public view returns (Listing[] memory) {
-        Listing[] memory activeListings = new Listing[](listingCount);
-        for (uint256 i = 0; i < listingCount; i++) {
-            if (listings[i].isForSale) {
-                activeListings[i] = listings[i];
+        uint256 count = 0;
+        for (uint256 i = 0; i < listingIds.length; i++) {
+            if (listings[listingIds[i]].isForSale) {
+                count++;
             }
         }
+
+        Listing[] memory activeListings = new Listing[](count);
+        uint256 index = 0;
+        for (uint256 i = 0; i < listingIds.length; i++) {
+            if (listings[listingIds[i]].isForSale) {
+                activeListings[index] = listings[listingIds[i]];
+                index++;
+            }
+        }
+
         return activeListings;
     }
 
@@ -84,35 +85,42 @@ contract Sale {
     }
 
     function getListingsByUser(address user) public view returns (Listing[] memory) {
-        uint256[] memory userListingIds = new uint256[](listingCount);
-        uint256 count = 0;
-        for (uint256 i = 0; i < listingCount; i++) {
-            if (listings[i].seller == user && listings[i].isForSale) {
-                userListingIds[count] = i;
+        uint count = 0;
+        for (uint i = 0; i < listingIds.length; i++) {
+            if (listings[listingIds[i]].seller == user && listings[listingIds[i]].isForSale) {
                 count++;
             }
         }
 
         Listing[] memory userlistings = new Listing[](count);
-        for (uint256 i = 0; i < count; i++) {
-            userlistings[i] = listings[userListingIds[i]];
+        uint index = 0;
+        for (uint i = 0; i < listingIds.length; i++) {
+            if (listings[listingIds[i]].seller == user && listings[listingIds[i]].isForSale) {
+                userlistings[index] = listings[listingIds[i]];
+                index++;
+            }
         }
 
         return userlistings;
     }
 
-    function getListingsByToken(uint256 tokenId) public view returns (Listing[] memory) {
-        uint256[] memory listingIds = tokenToListings[tokenId];
-        uint256 count = listingIds.length;
-
-        Listing[] memory tokenListings = new Listing[](count);
-        for (uint256 i = 0; i < count; i++) {
-            tokenListings[i] = listings[listingIds[i]];
-        }
-        return tokenListings;
-    }
-
     function getOwnedTokens(address owner) public view returns (uint256[] memory) {
-        return ownedTokens[owner];
+        uint256 count = 0;
+        for (uint256 i = 0; i < listingIds.length; i++) {
+            if (tokenContract.balanceOf(owner, listingIds[i]) > 0) {
+                count++;
+            }
+        }
+
+        uint256[] memory ownerTokens = new uint256[](count);
+        uint256 index = 0;
+        for (uint256 i = 0; i < listingIds.length; i++) {
+            if (tokenContract.balanceOf(owner, listingIds[i]) > 0) {
+                ownerTokens[index] = listingIds[i];
+                index++;
+            }
+        }
+
+        return ownerTokens;
     }
 }
