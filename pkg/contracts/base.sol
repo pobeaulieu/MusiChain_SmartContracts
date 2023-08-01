@@ -7,7 +7,7 @@ import "./Metadata.sol";
 contract Base is ERC1155 {
     mapping(uint256 => address[]) private tokenOwners;
     mapping(address => uint256[]) private ownedTokens;
-    uint256 private _currentTokenId = 1;
+    uint256 public _currentTokenId = 1;
     mapping(uint256 => address) public originalCreators;
     mapping(address => uint256[]) private tokensCreatedBy;
     Metadata private metadata;
