@@ -9,10 +9,12 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
+	"math"
 	"math/big"
 	metaWrapper "musichain/pkg/abigen/metadata"
 	"musichain/pkg/abigen/sale"
 	"os"
+	"time"
 
 	baseContractWrapper "musichain/pkg/abigen/Base"
 )
@@ -184,17 +186,36 @@ func deployNewSaleContract(privateKeyString string, contract_Address string) str
 	auth.GasPrice = gasPrice
 
 	contract_Address_hex := common.HexToAddress(contract_Address)
+
+	startTime := time.Now()
+
 	address, tx, instance, err := sale.DeploySale(auth, client, contract_Address_hex)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	addressHex := address.Hex()
-
 	_ = instance
 
-	fmt.Println(addressHex)
+	fmt.Println(address.Hex())
 	fmt.Println(tx.Hash().Hex())
 
-	return addressHex
+	// Wait for the transaction to be mined
+	receipt, err := bind.WaitMined(context.Background(), client, tx)
+	if err != nil {
+		log.Fatalf("Failed to get transaction receipt: %v", err)
+	}
+
+	endTime := time.Now()
+
+	// Calculate the cost
+	gasUsed := receipt.GasUsed
+	costInWei := new(big.Int).Mul(gasPrice, new(big.Int).SetUint64(gasUsed))
+	costInEther := new(big.Float).Quo(new(big.Float).SetInt(costInWei), big.NewFloat(math.Pow10(18)))
+
+	latency := endTime.Sub(startTime)
+
+	fmt.Printf("Cost of deployment: %s Ether\n", costInEther.Text('f', 18))
+	fmt.Printf("Deployment latency: %s\n", latency)
+
+	return address.Hex()
 }
