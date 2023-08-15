@@ -9,16 +9,14 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
-	"math"
 	"math/big"
+	baseContractWrapper "musichain/pkg/abigen/Base"
 	metaWrapper "musichain/pkg/abigen/metadata"
 	"musichain/pkg/abigen/sale"
 	"os"
-	"time"
-
-	baseContractWrapper "musichain/pkg/abigen/Base"
 )
 
+// The way we deploy contract is inspired from this tutorial : https://medium.com/nerd-for-tech/smart-contract-with-golang-d208c92848a9
 func Deploy(privateKey string) {
 	metaAddress := deployNewMetaDataContract(privateKey)
 	baseAddress := deployNewBaseContract(privateKey, metaAddress)
@@ -30,6 +28,7 @@ func Deploy(privateKey string) {
 	}
 	defer f.Close()
 
+	// We write the address into the .env file
 	_, err = f.WriteString("REACT_APP_METADATA_ADDRESS = " + metaAddress + "\n")
 	_, err = f.WriteString("REACT_APP_BASE_ADDRESS = " + baseAddress + "\n")
 	_, err = f.WriteString("REACT_APP_SALE_ADDRESS = " + saleAddress + "\n")
@@ -41,13 +40,13 @@ func Deploy(privateKey string) {
 }
 
 func deployNewMetaDataContract(privateKeyString string) string {
-	// Connect to Ganache
+	// Connection to Ganache
 	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
 		log.Fatalf("Failed to connect to Ganache: %v", err)
 	}
 
-	// Read private key
+	// Reading of the private key
 	privateKey, err := crypto.HexToECDSA(privateKeyString)
 	if err != nil {
 		log.Fatalf("Failed to parse private key: %v", err)
@@ -70,7 +69,6 @@ func deployNewMetaDataContract(privateKeyString string) string {
 		log.Fatal(err)
 	}
 
-	// Create a new authorized transactor
 	auth := bind.NewKeyedTransactor(privateKey)
 
 	auth.Nonce = big.NewInt(int64(nonce))
@@ -94,13 +92,13 @@ func deployNewMetaDataContract(privateKeyString string) string {
 }
 
 func deployNewBaseContract(privateKeyString string, contractAdress string) string {
-	// Connect to Ganache
+	// Connection to Ganache
 	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
 		log.Fatalf("Failed to connect to Ganache: %v", err)
 	}
 
-	// Read private key
+	// Reading of the private key
 	privateKey, err := crypto.HexToECDSA(privateKeyString)
 	if err != nil {
 		log.Fatalf("Failed to parse private key: %v", err)
@@ -123,7 +121,6 @@ func deployNewBaseContract(privateKeyString string, contractAdress string) strin
 		log.Fatal(err)
 	}
 
-	// Create a new authorized transactor
 	auth := bind.NewKeyedTransactor(privateKey)
 
 	auth.Nonce = big.NewInt(int64(nonce))
@@ -148,13 +145,13 @@ func deployNewBaseContract(privateKeyString string, contractAdress string) strin
 }
 
 func deployNewSaleContract(privateKeyString string, contract_Address string) string {
-	// Connect to Ganache
+	// Connection to Ganache
 	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
 		log.Fatalf("Failed to connect to Ganache: %v", err)
 	}
 
-	// Read private key
+	// Reading of the private key
 	privateKey, err := crypto.HexToECDSA(privateKeyString)
 	if err != nil {
 		log.Fatalf("Failed to parse private key: %v", err)
@@ -177,7 +174,6 @@ func deployNewSaleContract(privateKeyString string, contract_Address string) str
 		log.Fatal(err)
 	}
 
-	// Create a new authorized transactor
 	auth := bind.NewKeyedTransactor(privateKey)
 
 	auth.Nonce = big.NewInt(int64(nonce))
@@ -186,8 +182,6 @@ func deployNewSaleContract(privateKeyString string, contract_Address string) str
 	auth.GasPrice = gasPrice
 
 	contract_Address_hex := common.HexToAddress(contract_Address)
-
-	startTime := time.Now()
 
 	address, tx, instance, err := sale.DeploySale(auth, client, contract_Address_hex)
 	if err != nil {
@@ -198,24 +192,6 @@ func deployNewSaleContract(privateKeyString string, contract_Address string) str
 
 	fmt.Println(address.Hex())
 	fmt.Println(tx.Hash().Hex())
-
-	// Wait for the transaction to be mined
-	receipt, err := bind.WaitMined(context.Background(), client, tx)
-	if err != nil {
-		log.Fatalf("Failed to get transaction receipt: %v", err)
-	}
-
-	endTime := time.Now()
-
-	// Calculate the cost
-	gasUsed := receipt.GasUsed
-	costInWei := new(big.Int).Mul(gasPrice, new(big.Int).SetUint64(gasUsed))
-	costInEther := new(big.Float).Quo(new(big.Float).SetInt(costInWei), big.NewFloat(math.Pow10(18)))
-
-	latency := endTime.Sub(startTime)
-
-	fmt.Printf("Cost of deployment: %s Ether\n", costInEther.Text('f', 18))
-	fmt.Printf("Deployment latency: %s\n", latency)
 
 	return address.Hex()
 }

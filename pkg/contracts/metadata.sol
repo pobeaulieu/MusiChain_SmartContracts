@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+//  This contract stores all the data related to a token
 contract Metadata {
+    // A lot of mapping to keep track of information based on tokenID
     mapping(uint256 => string) public tokenNames;
     mapping(uint256 => string) public ipfsPaths;
     mapping(uint256 => uint256) public ticketPools;
     mapping(uint256 => uint256) public divs;
     mapping(uint256 => address[]) public tokenOwners;
-    mapping(address => uint256[]) public ownedTokens;
     mapping(uint256 => address) public originalCreators;
+
+    // Those mappings helps to get information about token owned or created by a certain address
+    mapping(address => uint256[]) public ownedTokens;
     mapping(address => uint256[]) public tokensCreatedBy;
 
     uint256[] public tokenIds;
@@ -28,7 +32,6 @@ contract Metadata {
     function getTokenIds() external view returns(uint256[] memory) {
         return tokenIds;
     }
-
 
     function getOwnerOfToken(uint256 tokenId) public view returns (address) {
         address[] memory owners = tokenOwners[tokenId];

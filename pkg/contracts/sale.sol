@@ -3,7 +3,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
+// This contract aims to provide a way to list token and to buy them
 contract Sale {
+    // This is the struct used to represent a listing
     struct Listing {
         uint256 listingId;
         uint256 tokenId;
@@ -15,13 +17,16 @@ contract Sale {
     }
 
     uint256 public currentListingId=1;
-    IERC1155 public tokenContract;
+    // The baseContract is used to retrieve information about the tokens and transfer them
+    IERC1155 public baseContract;
+    // This mapping store the listing we create
     mapping(uint256 => Listing) public listings;
 
-    constructor(IERC1155 _tokenContract) {
-        tokenContract = _tokenContract;
+    constructor(IERC1155 _baseContract) {
+        baseContract = _baseContract;
     }
 
+    // This function creates a listing
     function listToken(uint256 tokenId, uint256 priceInWei, uint256 amount) public {
         require(tokenId > 0, "Token ID should be greater than zero");
         require(priceInWei > 0, "Price should be greater than zero");
@@ -38,14 +43,17 @@ contract Sale {
         });
     }
 
+    // This function provide a way for a user to buy a token
     function buyToken(uint256 listingId, uint256 buyAmount) public payable {
         require(listings[listingId].isForSale, "This item is not for sale");
         Listing memory listing = listings[listingId];
         uint256 totalCost = listing.price * buyAmount;
         require(msg.value >= totalCost, "Sent value is less than the total cost");
-        require(tokenContract.balanceOf(listing.seller, listing.tokenId) >= buyAmount, "Seller does not have enough tokens for sale");
+        require(baseContract.balanceOf(listing.seller, listing.tokenId) >= buyAmount, "Seller does not have enough tokens for sale");
 
-        tokenContract.safeTransferFrom(listing.seller, msg.sender, listing.tokenId, buyAmount, "");
+        // This function from the ERC1155 standard provides a way to transfer a certain amount of a token from an address
+        // to another address
+        baseContract.safeTransferFrom(listing.seller, msg.sender, listing.tokenId, buyAmount, "");
 
         (bool success, ) = payable(listing.seller).call{value: totalCost}("");
         require(success, "Failed to transfer Ether to the seller");
@@ -105,7 +113,7 @@ contract Sale {
     function getOwnedTokens(address owner) public view returns (uint256[] memory) {
         uint256 count = 0;
         for (uint256 i = 0; i < currentListingId; i++) {
-            if (tokenContract.balanceOf(owner, listings[i].tokenId) > 0) {
+            if (baseContract.balanceOf(owner, listings[i].tokenId) > 0) {
                 count++;
             }
         }
@@ -113,7 +121,7 @@ contract Sale {
         uint256[] memory ownerTokens = new uint256[](count);
         uint256 index = 0;
         for (uint256 i = 0; i < currentListingId; i++) {
-            if (tokenContract.balanceOf(owner, listings[i].tokenId) > 0) {
+            if (baseContract.balanceOf(owner, listings[i].tokenId) > 0) {
                 ownerTokens[index] = listings[i].tokenId;
                 index++;
             }

@@ -4,7 +4,9 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "./Metadata.sol";
 
+// Contract representing the tokens created by the creator
 contract Base is ERC1155 {
+    // This metadata contract will be used to store information about the tokens
     Metadata private metadata;
     uint256 public _currentTokenId = 1;
     event Mint(address indexed from, uint256 tokenId);
@@ -13,6 +15,7 @@ contract Base is ERC1155 {
         metadata = _metadata;
     }
 
+    // The mint function used to create tokens
     function mint(string memory tokenName, uint256 amount, string memory ipfsPath, uint256 ticketPool, uint256 div, bytes memory data) public {
         uint256 newTokenId = _currentTokenId++;
         _mint(msg.sender, newTokenId, amount, data);
@@ -20,7 +23,8 @@ contract Base is ERC1155 {
         emit Mint(msg.sender, newTokenId);
     }
 
-    function sendEtherToOwners(uint256 tokenId, uint256 amount) public payable {
+    // This function provides a way to pay dividends to each owner of a token
+    function payDividends(uint256 tokenId, uint256 amount) public payable {
         address originalCreator = metadata.getOriginalCreator(tokenId);
         address[] memory owners = metadata.getTokenOwners(tokenId);
 
