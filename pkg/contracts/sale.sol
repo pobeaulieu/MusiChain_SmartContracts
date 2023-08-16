@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "./Metadata.sol";
 
 // This contract aims to provide a way to list token and to buy them
 contract Sale {
@@ -22,8 +23,12 @@ contract Sale {
     // This mapping store the listing we create
     mapping(uint256 => Listing) public listings;
 
-    constructor(IERC1155 _baseContract) {
+    // The Metadacontract is used to change the ownership of tokens
+    Metadata public metadataContract;
+
+    constructor(IERC1155 _baseContract, Metadata _metadataContract) {
         baseContract = _baseContract;
+        metadataContract = _metadataContract;
     }
 
     // This function creates a listing
@@ -54,6 +59,9 @@ contract Sale {
         // This function from the ERC1155 standard provides a way to transfer a certain amount of a token from an address
         // to another address
         baseContract.safeTransferFrom(listing.seller, msg.sender, listing.tokenId, buyAmount, "");
+
+        // We update the mapping of the owner
+        metadataContract.addTokenOwner(listing.tokenId, msg.sender);
 
         (bool success, ) = payable(listing.seller).call{value: totalCost}("");
         require(success, "Failed to transfer Ether to the seller");

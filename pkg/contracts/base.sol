@@ -30,12 +30,14 @@ contract Base is ERC1155 {
 
         require(originalCreator == msg.sender, "Only the original creator can send Ether");
         require(owners.length > 0, "Token does not exist or has no owners");
-        require(msg.value >= amount * owners.length, "Sent value is less than the required total");
+        require(msg.value >= amount * (owners.length - 1), "Sent value is less than the required total");  // subtract 1 for original creator
 
         uint256 sentAmount = 0;
         for (uint256 i = 0; i < owners.length; i++) {
-            payable(owners[i]).transfer(amount);
-            sentAmount += amount;
+            if (owners[i] != originalCreator) {
+                payable(owners[i]).transfer(amount);
+                sentAmount += amount;
+            }
         }
 
         payable(msg.sender).transfer(msg.value - sentAmount);

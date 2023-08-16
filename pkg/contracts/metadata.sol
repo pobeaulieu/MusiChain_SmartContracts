@@ -58,4 +58,8 @@ contract Metadata {
         return tokenOwners[tokenId];
     }
 
+    function addTokenOwner(uint256 tokenId, address newOwner) external {
+        tokenOwners[tokenId].push(newOwner);
+    }
+
 }

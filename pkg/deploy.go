@@ -20,7 +20,7 @@ import (
 func Deploy(privateKey string) {
 	metaAddress := deployNewMetaDataContract(privateKey)
 	baseAddress := deployNewBaseContract(privateKey, metaAddress)
-	saleAddress := deployNewSaleContract(privateKey, baseAddress)
+	saleAddress := deployNewSaleContract(privateKey, baseAddress, metaAddress)
 
 	f, err := os.Create(".env")
 	if err != nil {
@@ -144,7 +144,7 @@ func deployNewBaseContract(privateKeyString string, contractAdress string) strin
 	return addressHex
 }
 
-func deployNewSaleContract(privateKeyString string, contract_Address string) string {
+func deployNewSaleContract(privateKeyString string, contractBase_Address string, contractMeta_Address string) string {
 	// Connection to Ganache
 	client, err := ethclient.Dial("http://localhost:7545")
 	if err != nil {
@@ -181,9 +181,11 @@ func deployNewSaleContract(privateKeyString string, contract_Address string) str
 	auth.GasLimit = uint64(3000000) // in units
 	auth.GasPrice = gasPrice
 
-	contract_Address_hex := common.HexToAddress(contract_Address)
+	contract_Address_hex := common.HexToAddress(contractBase_Address)
 
-	address, tx, instance, err := sale.DeploySale(auth, client, contract_Address_hex)
+	contractMeta_Address_hex := common.HexToAddress(contractMeta_Address)
+
+	address, tx, instance, err := sale.DeploySale(auth, client, contract_Address_hex, contractMeta_Address_hex)
 	if err != nil {
 		log.Fatal(err)
 	}
