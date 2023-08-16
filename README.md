@@ -1,55 +1,31 @@
 
-# Go service 
-install go: https://go.dev/dl/
+# MusiChain Deployment Tool
 
-`go mod tidy`
+## A. Environment Setup: Ganache and Metamask Connection
 
-## React Webapp
-See MusiChain_UI repo https://github.com/pobeaulieu/MusiChain_UI
+### Metamask Account Creation
+1. Create a Metamask account.
+2. Obtain the seed phrase associated with the Metamask wallet.
 
-# Smart Contracts
+### Ganache Workspace Setup
+1. Create a new Ganache workspace.
+2. Provide the Metamask wallet's seed phrase during Ganache setup.
 
-For now, I did not find a way to build the contracts with solc without errors.
-Here is a workflow that worked for me. 
+### Adding Test Network to Metamask
+1. Open Metamask.
+2. Add a custom network with the following details:
+    - Network Name: Test Network
+    - New RPC URL: http://localhost:7545
+    - Chain ID: 1337
+    - Currency Symbol: ETH
 
-1. Compile base.sol on REMIX. Copy .abi in base.api and .bin in base.bin
-![img.png](./img/img.png)
+Now, the test accounts from Ganache should be accessible through Metamask.
 
-2. Generate Go code to interact with the contract. It offers a wrapper to Deploy and other functionnality. 
+## B. Deployment Process
+
+1. Write the Solidity contracts.
+2. Use Solc to generate .bin and .abi files for each contract. Alternatively, Remix compiler can be used for this purpose.
+3. Use Abigen to generate .go files using the following command. Repeat this step for all three contracts.
 `abigen --bin=pkg/services/build/Base.bin --abi=pkg/services/build/Base.abi --pkg=base --out=pkg/services/abigen/base/baseContract.go`
-Note: since we need to specify a package and to make sure the generated code remains in isolation (same function names can happen), the generated code for the sale contract should be in pkg/services/abigen/sale.go 
-I think this command should be used...
-`abigen --bin=pkg/services/build/Sale.bin --abi=pkg/services/build/Sale.abi --pkg=sale --out=pkg/services/abigen/sale/saleContract.go`
-
-References:
-Command to build that did not work because of following error when deploying with the generated code from the build with solc:
-2023/07/02 20:51:39 VM Exception while processing transaction: invalid opcode package services
-
-`solc --bin --abi --overwrite  pkg/services/contracts/listing.sol -o pkg/services/build`
-
-# Connect Metamask with Ganache
-1. Note your seed phrase of your Metamask Wallet somewhere. 
-2. Create a new Ganache Workspace and provide your wallet seed phrase
-
-![img_4.png](./img/img_4.png)
-
-3. Start Ganache Network
-4. Add a new network in Metamask extension
-
-![img_5.png](./img/img_5.png)
-
-5. Add network manually
-
-![img_6.png](./img/img_6.png)
-
-![img_7.png](./img/img_7.png)
-
-6. This should connect the first account to your wallet. 
-You can then import other accounts by coping the private key without 0x
-
-
-![img_8.png](./img/img_8.png)
-
-![img_9.png](./img/img_9.png)
-
-![img_10.png](./img/img_10.png)
+4. In the `main.go` file, add the private key of the account where the contracts will be deployed.
+5. Run the code in `main.go`. This code will deploy the contracts and generate the `.env` file containing contract addresses.
