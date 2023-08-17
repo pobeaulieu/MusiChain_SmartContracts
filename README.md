@@ -1,7 +1,7 @@
 
 # MusiChain Deployment Tool
 
-## A. Environment Setup: Ganache and Metamask Connection
+## Environment Setup: Ganache and Metamask Connection
 
 ### Metamask Account Creation
 1. Create a Metamask account.
@@ -21,7 +21,7 @@
 
 Now, the test accounts from Ganache should be accessible through Metamask.
 
-## B. Deployment Process
+## Deployment Process
 
 1. Write the Solidity contracts.
 2. Use Solc to generate .bin and .abi files for each contract. Alternatively, Remix compiler can be used for this purpose.
